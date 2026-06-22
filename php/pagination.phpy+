@@ -1,0 +1,22 @@
+<?php
+
+include_once '../login.php';
+
+echo "<table><thead><tr><th>ID</th><th>Name</th><th>Usename</th></tr></thead><body>";
+
+$sql = 'SELECT * FROM users LIMIT 5 OFFSET :offset';
+$stmt = $pdo->prepare($sql);
+$stmt->execute([':offset'] => 0);
+$users = $stmt->fetchAll();
+foreach ($users as $user) {
+	echo <<<_END
+		<tr>
+		<td>{$user['id']}</td>
+		<td>{$user['name']}</td>
+		<td>{$user['username']}</td>
+		</tr>
+		_END;
+}
+echo "</tbody></table>";
+
+
