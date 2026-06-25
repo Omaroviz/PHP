@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="vkontaktestyle.css">
+	<link rel="icon" href="media/vkontakte.ico">
+	<title>Вконтакте Druza</title>
+</head>
+
+<body>
+<header style="">
+	<div class="vkontakte-main-panel">
+		<a href="vkontakte.html" class="vkontakte-text">
+			<span class="vkontakte-main-text-B">В</span>контакте
+		</a>
+		<div class="vk-left">
+			<a href="profile.html" class="vk-button">Моя страница</a>
+			<a href="friends.html" class="vk-button">Друзья</a>
+		</div>
+
+		<div class="vk-right" id="vk-right">
+			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
+			<a href="#" class="vk-button">Поиск</a>
+			<a href="login.html" class="vk-button" id="userStatus">Вход</a>
+		</div>
+	</div>
+
+</header>
+
+
+<main class="page-layout">
+	<aside class="sidebar">
+		<div class="friends-mini" style="justify-content: normal">
+			<span class="friends-mini-logo" id="userNameTwo"></span>
+			<span id="userNameHTML" class="sidebar-userName"></span>
+		</div>
+		<nav>
+			<h2 style="margin: 10px;"><em>....Стена Новостей</em></h2>
+			<button type="button" class="vk-button" id="menuButton">Меню</button>
+			<!--			<a href="#vniz" class="vk-button">Вниз</a>-->
+			<a href="#" class="vk-button" id="subscribeButton" onclick="subscribe()">Подписаться</a>
+		</nav>
+		<div class="sidebar-window-post">
+			<a href="" class="sidebar-window-post-btn">Все посты</a>
+			<a href="" class="sidebar-window-post-btn">Посты друзей</a>
+			<a href="" class="sidebar-window-post-btn">Посты каналов</a>
+			<a href="" class="sidebar-window-post-btn">Общая лента</a>
+		</div>
+		<div class="sidebar-window-post">
+			<a href="" class="sidebar-window-post-btn">Мои лайки</a>
+			<a href="" class="sidebar-window-post-btn">Мои дизлайки</a>
+			<a href="" class="sidebar-window-post-btn">Мои комментарии</a>
+			<!--			<a href="" class="sidebar-window-post-btn">Мои голоса: 0</a>-->
+		</div>
+		<!--<div class="sidebar-window-post">-->
+		<!--<a href="" class="sidebar-window-post-btn">Ответы</a>-->
+		<!--<a href="" class="sidebar-window-post-btn">Избранное</a>-->
+		<!--<a href="" class="sidebar-window-post-btn">Нравиться друзьям</a>-->
+		<!--</div>-->
+	</aside>
+	<div class="main-content">
+		<div class="post">
+			<p class="postmain">Новая запись (Анонимно)</p>
+			<textarea id="postName" placeholder="Заголовок" class="createPostName"></textarea>
+			<textarea id="postInput" placeholder="Что у вас нового?" class="createPostText"></textarea>
+			<input type="text" id="postCommand" placeholder="Команда" class="createPostCommand">
+
+			<button type="button" onclick="addPost()" class="createPostButton">Опубликовать</button>
+		</div>
+
+		<!-- Сюда будут падать новые посты -->
+		<div id="wall"></div>
+
+		<div class="post">
+			<p class="postmain">Версия 0.2.4</p>
+			<ul>
+				<li>Анкеты друзей по середине</li>
+				<li>Переход к главной странице с помощью кнопки "Вконтакте"</li>
+				<li>Новый цвет постов</li>
+				<li>Улучшенная адаптация сайта к мобильным телефонам</li>
+				<li>Бета-комментарии к постам</li>
+				<li>Dinamic SideBar (beta) на главной странице</li>
+			</ul>
+			<div>
+				<button id="likePost" class="vk-button-btn" onclick="likePost(this)">Лайк</button>
+				<button id="DislikePost" class="vk-button-btn">Дизлайк</button>
+				<!--			<a href="" class="vk-button">Лайк</a>-->
+				<button class="vk-button-btn" onclick="comment(this)">Комментарии</button>
+			</div>
+		</div>
+		<div class="post">
+			<p class="postmain">Об версии 0.2.5</p>
+			<p>Связи с изменением "шапки" страницы, мобильная версия сайта начала лагать. Для устранения проблемы требуется
+				время, но
+				новые функции будут появляться в версии 0.2.4, 0.2.4.x и т.д. </p>
+		</div>
+		<div class="post">
+			<p class="postmain">Версия 0.2.3</p>
+			<p>Обновление дизайна:</p>
+			<ul>
+				<li>Новая верхняя строка в стиле Вконтакте 2006.</li>
+				<li>Кнопка "Подписаться" работает.</li>
+				<li>Добавлена родительская <a href="https://vkontakte.ucoz.site/">страница</a> всех версий сайта</li>
+				<li>Исправлены текстовые поля.</li>
+				<li>Добавлены посты в профиле</li>
+				<li>Добавлены кнопки "Новости", "Поиск" и "Вход" в шапке</li>
+				<li>Обводка аватара профиля.</li>
+				<li>Добавлен бета-сайт Вконтакте "Мои Друзья"</li>
+			</ul>
+		</div>
+		<div class="post">
+			<p class="postmain">Версия 0.2.2</p>
+			<p>Крупное обновление дизайна и функционала:</p>
+			<ul>
+				<li>Новая верхняя строка, добавлены кнопки "Моя страница" и "Друзья". Логотип и кнопки распологаются
+					слево-направо.
+				</li>
+				<li>Компактный размер постов.</li>
+				<li>Добавлена функция "Написать пост" (бета-доступ), подтверждение паролем.</li>
+				<li>Новый дизайн кнопок. Переход из тегов &lt;button&gt; в &lt;a&gt;.</li>
+			</ul>
+			<!--		<img src="media/Desing_0-2-2.png" alt="Дизайн страницы 0.2.2" width="500px">-->
+		</div>
+		<div class="post">
+			<p class="postmain">Дата выхода.</p>
+			Пока эта информация ни кому не нужна (проект локальный на 18.02.2026, ссылка на код есть только в GitHub), кроме
+			разработчиков. Так как проект локальный, посты создаются только по классу post вручную. Открытие сайта будет
+			воспроизведено только после того, как на сайте будет:
+			<ol>
+				<li>Добавление постов на сервер без кода</li>
+				<li>Система пользователей</li>
+				<li>Публичные каналы (паблики)</li>
+				<li>Профиль: стена, лич. информация, друзья и тп</li>
+			</ol>
+			Только после этих пунктов сервис "Вконтакте Druza" будет официально открыт
+		</div>
+		<div class="post">
+			<img src="media/IMG_0507.jpg" alt="" width="100px"/> <img src="media/IMG_0508.jpg" alt="" width="100px"/>
+			<p class="postmain">Обновление дизайна</p>
+			<p>Новые логотипы и кнопки. За логотип и подбор цвета спасибо <a href="google">Gemini.</a></p>
+		</div>
+		<div class="post">
+			<p class="postmain">Создатели Майами сделали Lorem Ipsum!</p>
+			<p>Давно выяснено, что при оценке дизайна и композиции читаемый текст мешает сосредоточиться. Lorem Ipsum используют
+				потому, что тот обеспечивает более или менее стандартное заполнение шаблона, а также реальное распределение букв и
+				пробелов в абзацах, которое не получается при простой дубликации "Здесь ваш текст.. Здесь ваш текст.. Здесь ваш
+				текст.." Многие программы электронной вёрстки и редакторы HTML используют Lorem Ipsum в качестве текста по
+				умолчанию, так что поиск по ключевым словам "lorem ipsum" сразу показывает, как много веб-страниц всё ещё
+				дожидаются своего настоящего рождения. За прошедшие годы текст Lorem Ipsum получил много версий. Некоторые версии
+				появились по ошибке, некоторые - намеренно (например, юмористические варианты).</p>
+		</div>
+		<div class="post">
+			<p class="postmain">Альфа-версия Вконтакте Druza открыта!</p>
+			<p>Сегодня, 19 ферваля 2026 года, в 18:41 добавлен первый репозиторий Вконтакте Druza.</p>
+			<!--		<div class="postfooter">-->
+			<!--			<button type="submit" onclick="like()">Лайк</button>-->
+			<!--			<button type="submit">Дизлайк</button>-->
+			<!--			<a href="mailto:omaroviz2025@gmail.com"><button type="submit">E-Mail</button></a>-->
+			<!--		</div>-->
+		</div>
+	</div>
+</main>
+<footer id="vniz" style="margin: 0;">
+	<a href="#" class="vk-button" onclick="confirm('О сайте.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nПривет')">О сайте</a>
+	"Вконтакте Druza" ООО. Все права защищены. Распространения кода сайта разрешено с <a href="#">условиями
+	конфидициальности</a> на сайте GitHub.
+</footer>
+<script src="main.js"></script>
+
+</body>
+
+</html>
+

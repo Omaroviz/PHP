@@ -1,0 +1,621 @@
+/* Main */
+
+footer {
+    text-align: center;
+    margin-top: 30px;
+}
+
+body {
+    background-color: #c8c8c8;
+    font-family: Tahoma, Verdana, sans-serif;
+    font-size: 13px; /* Да-да, в старом ВК всё было довольно мелким! */
+}
+
+/* Header */
+
+.vkontakte-text {
+    color: lightgrey;
+    flex-shrink: 0;
+    font-size: 300%;
+    text-decoration: none; /* убираем подчёркивание */
+}
+
+.vk-left {
+    display: flex;
+    gap: 15px; /* расстояние между правыми кнопками */
+}
+
+.vkontakte-main-panel {
+    border-radius: 10px;
+    display: flex;
+    font-weight: bold;
+    align-items: center;
+    gap: 30px;
+    background-color: #45688e;
+    padding: 15px; /* высота шапки */
+    flex-wrap: nowrap; /* всё в один ряд */
+}
+
+.vkontakte-text {
+    color: lightgrey;
+    flex-shrink: 0;
+    font-size: 300%;
+}
+
+.vkontakte-main-text-B {
+    cursor: grab;
+    background-color: lightgrey;
+    color: #45688e;
+    padding: 0px 8px;
+    border-radius: 10px;
+    margin-right: 5px;
+}
+
+.vk-right {
+    margin-left: auto; /* отталкиваем весь блок вправо */
+    display: flex;
+    gap: 10px; /* расстояние между правыми кнопками */
+}
+
+.vk-button {
+    display: inline-block;
+    background-color: #edeef0;
+    border: 1px solid #adb9c7;
+    padding: 5px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #2b587a;
+    font-size: 13px;
+}
+
+.vk-button:hover {
+    background-color: #dae1e8;
+}
+
+.vk-button:active {
+    background-color: #dce1e6;
+    padding-top: 6px;
+    padding-bottom: 4px;
+}
+
+.vk-button-btn {
+    display: inline-block;
+    background-color: #edeef0;
+    border: 1px solid #adb9c7;
+    padding: 5px 15px;
+    border-radius: 5px;
+    color: #2b587a;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    line-height: normal;
+    outline: none;
+}
+
+.vk-button-btn:hover {
+    background-color: #e5ebf1;
+}
+
+.vk-button-btn:active {
+    background-color: #dce1e6;
+    padding-top: 6px;
+    padding-bottom: 4px;
+}
+
+/* Post & createPost */
+
+.post {
+    background-color: #e1e1e1;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 15px auto;
+    border: 1px solid #989898;
+    padding: 20px;
+    margin-left: 0 !important;
+    margin-right: auto;
+}
+
+.postmain {
+    font-size: 30px;
+    margin: 3px;
+    padding: 1px;
+}
+
+.createPostName {
+    width: 98.5%;
+    height: 20px;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.createPostName,
+.createPostText {
+    display: block;
+    margin: 1px auto 5px auto;
+    max-width: 580px;
+    width: 100%;
+}
+
+.createPostText {
+    width: 100%;
+    height: 80px;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.createPostCommand {
+    width: 15%;
+    height: 10px;
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid black;
+}
+
+.createPostButton {
+    background-color: #45679e;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+/* Profile */
+
+.profile-post-container {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex: 1; /* занимает всё доступное место */
+}
+
+.profile-main {
+    max-width: 960px;
+    margin: 0;
+    padding: 0;
+}
+
+.friends-mini-logo {
+    min-width: 30px;
+    text-align: center;
+}
+
+.profile-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    /*margin-top: 20px;*/
+    padding: 0;
+}
+
+.profile-info {
+    min-width: 300px;
+}
+
+.profile-logo {
+    height: 300px; /* Фиксированный квадрат */
+    object-fit: cover; /* Обрезает края, не искажает */
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #45688e;
+    padding: 3px;
+}
+
+.profileName {
+    margin: 10px;
+}
+
+.profile-post {
+    background-color: papayawhip;
+    border-radius: 10px;
+    max-width: 600px;
+    border: 1px solid #dae1e8;
+    padding: 20px;
+    margin: 0;
+}
+
+/* Friends.html */
+
+.friends-sidebar {
+    margin-right: 0;
+    margin-top: 20px;
+    flex-shrink: 0; /* не сжимается */
+    background-color: #e4e8ed;
+    border: 1px solid #adb9c7;
+    border-radius: 10px;
+    padding: 20px;
+    width: 300px; /* фикс ширина */
+    font-size: 16px;
+}
+
+.friends-page-layout {
+    display: flex;
+    margin: 0 auto;
+    padding: 0 10px;
+    padding-top: 10px;
+    align-items: flex-start; /* не растягиваем по высоте */
+    gap: 100px;
+}
+
+.friends-sidebar-mini-profile {
+    background-color: lightgrey;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.friends-window {
+    border-radius: 10px;
+    margin: 20px auto; /* ← auto центрирует! */
+    padding: 15px;
+    background-color: #b5b5b5;
+    border: 1px solid #dae1e8;
+    max-width: 800px; /* ← Шире, но не растягивается */
+    width: 90%;
+}
+
+.friends-mini {
+    background-color: #cccccc;
+    padding: 12px 20px;
+    font-size: 28px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* ← ВОТ ЭТО добавь обратно! */
+}
+
+.friends-mini-logo {
+    background-color: #d8d8d8;
+    color: #45688e;
+    font-weight: bold;
+    margin: 5px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    border: 3px solid #adb9c7; /* ← Рамка 10px серого цвета ВК */
+    /*margin-right: 5px;*/
+}
+
+.friends-mini-buttons {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.friends-mini .vk-right {
+    margin-left: 0 !important; /* Отключаем vk-right внутри friends-mini */
+}
+
+.friends-button {
+    display: inline-block;
+    background-color: #0076aa;
+    border: 1px solid #adb9c7;
+    padding: 5px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 13px;
+}
+
+.friends-button:hover {
+    background-color: #0186c1;
+}
+
+.friends-online {
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #9c9c9c;
+    text-align: center;
+}
+
+.friends-online-text {
+    font-size: 15px;
+}
+
+.friends-find {
+    margin: 10px auto ;
+    height: 20px;
+    width: 200px;
+    border-width: 2px;
+    border-radius: 5px;
+}
+
+.friends-find-btn {
+    margin: auto 10px;
+}
+
+.friends-online-text-main {
+    text-align: center;
+    margin: 5px 10px;
+    font-size: 25px;
+}
+
+.friends-online-btn {
+    text-decoration: none;
+    color: #3a3a3a;
+    background-color: #bababa;
+    padding: 6px;
+    border-radius: 10px;
+    display: block;
+    margin: 10px;
+}
+
+.friends-online-btn:hover {
+    color: #3a3a3a;
+    background-color: #cacaca;
+}
+
+/* Sign.html & Login.html */
+
+.input-text {
+    font-weight: 600;
+}
+
+.login-content {
+    background-color: #e1e1e1;
+    border-radius: 10px;
+    /*margin: 60px 500px;*/
+    text-align: center;
+    padding: 10px 100px;
+}
+
+.login-main-text {
+    font-size: 30px;
+    margin: 10px;
+    /*background-color: #cacaca;*/
+    /*border-radius: 10px;*/
+}
+
+.login-content {
+    margin: 60px auto; /* ← auto вместо 500px */
+    max-width: 400px; /* ← Фикс ширина */
+    width: 90%;
+}
+
+/* Sidebar & Main-Content */
+
+/*.sidebar {*/
+/* background-color: #45688e;*/
+/* max-width: 300px;*/
+/* margin: 10px;*/
+/* display: flex;*/
+/* height: 100px;*/
+/*}*/
+
+.sidebar-userName {
+    font-size: 30px;
+    margin: 0;
+    padding: 0;
+}
+
+.page-wrapper {
+    /*max-width: 1800px;*/
+    margin: 0 auto;
+    /*padding: 0 30px;*/
+}
+
+.page-layout {
+    display: flex;
+    margin: 0 auto;
+    padding: 0 10px;
+    padding-top: 10px;
+    align-items: flex-start; /* не растягиваем по высоте */
+    gap: 100px;
+}
+
+.main-content {
+    flex: 1;
+    margin: auto;
+}
+
+
+
+.sidebar {
+    margin-right: 0;
+    margin-top: 20px;
+    flex-shrink: 0; /* не сжимается */
+    background-color: #e4e8ed;
+    border: 1px solid #adb9c7;
+    border-radius: 10px;
+    padding: 20px;
+    width: 300px; /* фикс ширина */
+    font-size: 16px;
+}
+
+.sidebar-window-post {
+    background-color: lightgrey;
+    margin: 10px auto;
+    padding: 2px 9px;
+    /*border: 3px solid #adb9c7;*/
+    border: 3px solid #9f9f9f;
+    border-radius: 3px;
+}
+
+.sidebar-window-post-btn {
+    text-decoration: none;
+    color: black;
+    display: block;
+    margin: 4px 0px;
+    padding: 0 1px;
+    text-align: left;
+    transition: 0.01s;
+}
+
+.main-content {
+    margin-left: 0;  /* расстояние от sidebar */
+}
+
+.sidebar-window-post-btn:hover {
+    background-color: #bfbfbf;
+}
+
+.sidebar-window-post-btn-center {
+    text-decoration: none;
+    color: black;
+    display: block;
+    margin: 4px 0px;
+    text-align: center;
+    border: 3px solid #bdbdbd;
+    border-radius: 4px;
+}
+
+.sidebar-window-post-btn-center:hover {
+    background-color: #bfbfbf;
+    border-radius: 0px;
+}
+
+/* Media */
+
+@media (max-width: 400px) {
+    .page-layout {
+        gap: 0;
+
+    }
+
+    .createPostName,
+    .createPostText {
+        max-width: 250px;
+    }
+    .main-content {
+        margin: 0;
+    }
+    .friends-mini {
+        gap: 0;
+    }
+    .post,
+    .sidebar {
+        max-width: 280px;
+    }
+    .vkontakte-main-panel {
+        max-width: 350px;
+        margin: auto;
+    }
+}
+
+@media (max-width: 800px) {
+    .vk-button {
+        padding: 3px 10px;
+    }
+}
+
+@media (max-width: 700px) {
+    .vk-button {
+        padding: 1px 10px;
+    }
+
+    .login-content {
+        background-color: #e1e1e1;
+        border-radius: 10px;
+        /*margin: 60px 500px;*/
+        text-align: center;
+        padding: 10px 0px;
+    }
+
+    .vkontakte-main-panel {
+        padding: 10px 8px;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 650px) {
+    .vk-button {
+        padding: 1px 10px;
+    }
+
+    .vkontakte-main-panel {
+        padding: 10px 8px;
+        gap: 8px;
+    }
+
+    .post {
+        max-width: 350px;/* calc(100% - 20px);    отступы 10px слева и справа */
+        margin: 10px auto;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .sidebar {
+        max-width: 300px;/* calc(100% - 20px);    отступы 10px слева и справа */
+        margin: auto;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    .page-layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .profile-row { flex-direction: column; }
+
+    .vkontakte-main-panel {
+        flex-wrap: wrap; /* Кнопки переносятся */
+        gap: 5px;
+    }
+
+    .vkontakte-main-panel {
+        padding: 10px 8px;
+        gap: 8px;
+    }
+
+    .vkontakte-text {
+        font-size: 200%;
+    }
+
+    .friends-window {
+        margin: 10px 10px; /* Меньше отступов */
+        width: calc(100% - 20px);
+    }
+}
+
+.post, .friends-window, .profile-post {
+    overflow-wrap: break-word; /* Переносит длинные слова на новую строку */
+    word-wrap: break-word;      /* Поддержка старых браузеров */
+    word-break: break-word;     /* Дополнительная страховка */
+}
+
+.post-footer-like {
+    background-color: #7d95af;
+    padding: 5px;
+    border-radius: 5px;
+    border: solid 1px black;
+    /*max-height: 20px;*/
+    text-align: center;
+    min-width: 30px;
+}
+
+.post-footer-like:hover {
+    background-color: #2bcd00;
+}
+
+.post-footer-dislike {
+    background-color: #7d95af;
+    padding: 5px;
+    border-radius: 5px;
+    border: solid 1px black;
+    text-align: center;
+    max-height: 30px;
+    min-width: 30px;
+}
+
+.post-footer-dislike:hover {
+    background-color: #cd0000;
+}
+
+.page-layout {
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+/*.main-content {*/
+/*    margin: 0 auto; !* ← по центру *!*/
+/*    max-width: 800px; !* фиксируем ширину *!*/
+/*    width: 100%;*/
+/*}*/
