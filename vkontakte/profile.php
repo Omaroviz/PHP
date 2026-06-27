@@ -4,10 +4,61 @@ include_once 'login.php';
 
 session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['city_btn'])) {
-	echo codetext('ws', "ww"); 
-	echo $_POST['city'];
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])) {
+	if (isset($_SESSION['id'])) {
+		header('Location: vkontakte.php');
+		exit();
+	}
 }
+
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['city_btn'])) {
+	echo codetext('Отладка', "полковнику никто не пишет"); 
+	echo $_POST['city'];
+	$stmt = $pdo->prepare("UPDATE users_info SET city = :city WHERE id = :id");
+	$stmt->execute([
+		':city' => $_POST['city'],
+		':id' => $_SESSION['id'],
+	]);
+	header('Location: profile.php?id='.$_SESSION['id']);
+	exit();
+}
+
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['about_btn'])) {
+	$sql = "UPDATE users_info SET about = :about WHERE id = :id";
+	$stmt = $pdo->prepare($sql);
+	$stmt->execute([
+		':about' => $_POST['about'],
+		':id' => $_SESSION['id']
+	]);
+	header("Location: profile.php?id=".$_SESSION['id']);
+	exit();
+}
+if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
+	$sql = "SELECT * FROM users WHERE id = :id";
+	$stmt = $pdo->prepare($sql);
+	$stmt->execute([':id' => $_GET['id']]);
+	$user = $stmt->fetch();
+	if ($user) {
+		if ($user['id'] === $_SESSION['id']) {
+			$edit_profile = TRUE;
+		} else {
+			$edit_profile = FALSE;	
+		}
+		$profile = $user;
+		$stmt = $pdo->prepare("SELECT * FROM users_info WHERE id = :id");
+		$stmt->execute([':id' => $profile['id']]);
+		$profile_info = $stmt->fetch();
+	} else {
+		echo "User not find :(";
+		exit();
+	}
+} else {
+	header("Location: profile.php?id=".$_SESSION['id']);
+	exit();
+}
+
+
+
 ?>
 
 
@@ -20,6 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['city_btn'])) {
 	<link rel="stylesheet" href="vkontaktestyle.css" type="text/css" media="all"/>
 	<link rel="stylesheet" href="profile.css" type="text/css" media="all"/>
 	<title>Моя страница</title>
+	<style>
+	.post {
+		min-width: 600px;
+	}
+	</style>
 </head>
 
 <body>
@@ -34,6 +90,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['city_btn'])) {
 		</div>
 
 		<div class="vk-right" id="vk-right">
+			<form method="POST" action="find_user.php" style="margin: 0; padding: 0">
+			<input type="text" placeholder="Поиск" style="padding-left: 9px;">
+			<button type="submit" name="find_user_btn">Поиск</button></form>
 			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
 			<a href="#" class="vk-button">Поиск</a>
 			<a href="login.html" class="vk-button" id="userStatus">Вход</a>
@@ -49,117 +108,83 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['city_btn'])) {
 				<div class="page-layout">
 					<div class="profile-info">
 						<img src="media/Pavel_Durov_logo.jpg" alt="Фото профиля" class="profile-logo">
-						<h1 class="profileName"><span><?php echo $_SESSION['name']?></span></h1>
+						<h1 class="profileName"><span><?php echo htmlspecialchars($profile['name']);?></span></h1>
 						<h3>Личная информация:</h3>
 						<ul>
-						<li>Никнейм: <span id="profile-info-userName"><?php echo $_SESSION['username']?></span></li>
+						<li>Никнейм: <span id="profile-info-userName"><?php echo htmlspecialchars($profile['username'])?></span></li>
 							<li>Возраст: <span id="profile-info-age">21</span>
-								<button class="vk-button-btn"
-								        style="max-width: 100px; text-align: center; padding: 1px; font-size: 10px"
-								        onclick="prompt('Введите Ваш возраст:')">Изменить
-								</button>
-							</li>
+<?php
+if ($edit_profile) {echo '<button class="vk-button-btn" style="max-width: 100px; text-align: center; padding: 1px; font-size: 10px">Изменить</button>';}
+?>
+</li>
 							<li>
+								<label for="city-select">Город: <?php echo $profile_info['city'];?></label>
+								<?php
+								if ($edit_profile) {
+								echo <<<_END
 								<form method="POST">
-								<label for="city-select">Город:</label>
 								<select id="city-select" class="vk-button-btn" style="max-width: 120px; padding: 1px; font-size: 10px" name="city">
-									<option value="vladivostok">Владивосток</option>
-									<option value="khabarovsk">Хабаровск</option>
-									<option value="izhevsk">Ижевск</option>
-									<option value="makhachkala">Махачкала</option>
-									<option value="tolyatti">Тольятти</option>
-									<option value="tumen">Тюмень</option>
-									<option value="saratov">Саратов</option>
-									<option value="krasnodar">Краснодар</option>
-									<option value="volgograd">Волгоград</option>
-									<option value="perm">Пермь</option>
-									<option value="voronezh">Воронеж</option>
-									<option value="krasnoyarsk">Красноярск</option>
-									<option value="omsk">Омск</option>
-									<option value="rostov">Ростов-на-Дону</option>
-									<option value="ufa">Уфа</option>
-									<option value="samara">Самара</option>
-									<option value="che">Челябинск</option>
-									<option value="nn">Нижний Новгород</option>
-									<option value="kazan">Казань</option>
-									<option value="ekb">Екатеринбург</option>
-									<option value="nsk">Новосибирск</option>
-									<option value="spb">Санкт-Петербург</option>
-									<option value="msk">Москва</option>
-									<option value="other" selected>Другой город</option>
+								<option value="Москва">Москва</option>
+								<option value="Санкт-Петербург">Санкт-Петербург</option>
+								<option value="Новосибирск">Новосибирск</option>
+								<option value="Екатеринбург">Екатеринбург</option>
+								<option value="Казань">Казань</option>
+								<option value="Нижний Новгород">Нижний Новгород</option>
+								<option value="Челябинск">Челябинск</option>
+								<option value="Самара">Самара</option>
+								<option value="Омск">Омск</option>
+								<option value="Ростов-на-Дону">Ростов-на-Дону</option>
+								<option value="Уфа">Уфа</option>
+								<option value="Красноярск">Красноярск</option>
+								<option value="Воронеж">Воронеж</option>
+								<option value="Пермь">Пермь</option>
+								<option value="Волгоград">Волгоград</option>
+								<option value="Краснодар">Краснодар</option>
+								<option value="Саратов">Саратов</option>
+								<option value="Тюмень">Тюмень</option>
+								<option value="Тольятти">Тольятти</option>
+								<option value="Ижевск">Ижевск</option>
+								<option value="Махачкала">Махачкала</option>
+								<option value="Хабаровск">Хабаровск</option>
+								<option value="Владивосток">Владивосток</option>
+								<option value="Другой" selected>Другой город</option>
 								</select>
-							<button type="submit" name="city_btn">Enter</button>
+							<button type="submit" name="city_btn" class="vk-button-btn" style="padding: 0 10px">Готово</button>
 							</form>
+							_END;
+								}
+							?>
 							</li>
-							<li>О себе:
-								<button class="vk-button-btn"
-								        style="max-width: 100px; text-align: center; padding: 1px; font-size: 10px"
-								        onclick="prompt('Введите текст:')">Изменить
-								</button>
+<li>    <form method="POST">
+	<label>О себе: </label>
+	    <span><?php 
+	$about = $profile_info['about'] ?? '';
+echo nl2br(htmlspecialchars(wordwrap($about, 30, "\n", true)));	?>
+<?php if ($edit_profile) { ?>
+            <textarea name="about" placeholder="Напишите о себе..."></textarea><br>
+            <button type="submit" name="about_btn" class="vk-button-btn">Сохранить</button>
+	<?php } ?>    
+</form>
+</li>
 							</li>
 						</ul>
 					</div>
 					<div class="profile-post-container">
 						<div class="post">
-							Нашел сайт Беларусии <a href="https://www.belarus.by/ru">belarus.by/ru</a>
+							<form method="POST">
+								<p class="postmain">Новый пост</p`>
+								<textarea name="title" id="postName" placeholder="Заголовок" class="createPostName"></textarea>
+								<textarea name="text" id="postInput" placeholder="Что у вас нового?" class="createPostText"></textarea>
+								<!-- <input type="text" id="postCommand" placeholder="Команда" class="createPostCommand"> -->
+								<button type="submit" name="add_post" class="createPostButton">Опубликовать</button>
+							</form>
 						</div>
-						<div class="post">
-							<p class="postmain">Самый первый сайт</p>
-							Еще до Вконтакте Druza была сеть сайтов R.E.A.C.T. Она включала в себя главную страницу, литернет,
-							WebDonwloads и т.д. Первая версия Вконтакте Druza тоже входила в этот список, но была удален из-за слишкой
-							разницы между Сетью R.E.A.C.T и Вконтакте. Сейчас проект заброшен, но все равно его моно найти по это
-							ссылке:
-							<a href="https://kazah.ucoz.net/Browser_Main/Browser.html">https://kazah.ucoz.net/Browser_Main/Browser.html</a>
-						</div>
-						<div class="post">
-							<p class="postmain">Lorem ipsum.</p>
-							Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam aliquid animi aspernatur at cum cumque
-							deleniti dicta, dignissimos dolore dolorem doloribus eius enim error est, eum facere facilis hic illo
-							illum in
-							ipsum minima modi molestiae necessitatibus nesciunt non odio omnis quos repellat repellendus rerum
-							sapiente
-							tempora vero? Beatae excepturi laboriosam laborum, officia quia quisquam repellendus. Ad aliquam amet,
-							blanditiis consequuntur doloribus, eligendi enim eos est et eveniet hic, impedit ipsam laborum minima
-							nesciunt
-							non obcaecati odio omnis quae rem similique sit sunt suscipit. Aliquid, aspernatur consequuntur ea
-							excepturi
-							expedita facere, id ipsa maiores modi non odio perspiciatis possimus quae similique tempora ullam vitae
-							voluptas voluptate! Aliquid aperiam blanditiis consectetur cum cumque debitis, deserunt distinctio
-							doloremque
-							dolorum enim fuga hic incidunt magni necessitatibus, nesciunt odit quia rem repellat saepe veritatis.
-							Impedit,
-							nihil, nostrum? Aliquam autem consequatur debitis delectus dicta doloremque eaque earum ex hic ipsa ipsam
-							itaque iusto necessitatibus nemo neque obcaecati, officiis placeat praesentium quo similique sit sunt
-							vitae
-							voluptas. Amet, consequatur deserunt dolorem doloremque et facilis ipsum labore maiores minima, nisi
-							pariatur
-							porro quasi quia quis recusandae rerum ullam veritatis. Animi consequuntur deserunt dolore facilis harum
-							in
-							inventore iste, laborum natus obcaecati quam quidem quis quo sunt, voluptates?
-						</div>
-						<!--				<div class="post">-->
-						<!--					<p class="postmain">Тест Видео</p>-->
-						<!--					<video controls style="max-width: 300px; width: 100%; aspect-ratio: 9 / 16; object-fit: cover;">-->
-						<!--						<source src="video-real.mp4" type="video/mp4">-->
-						<!--					</video>-->
-						<!--				</div>-->
-						<div class="post">
-							Мы здесь не для того, чтобы подстраиваться под реальность. Мы здесь для того, чтобы заставить реальность
-							подстроиться под нас
-						</div>
-						<div class="post">
-							<p class="postmain">Привет.</p>
-							<img src="media/IMG_0490.PNG" alt="Собака Вконтакте" width="300px">
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </main>
 
-<script src="main.js"></script>
-<script src="profile.js"></script>
 </body>
 
 </html>

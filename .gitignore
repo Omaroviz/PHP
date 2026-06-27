@@ -10,5 +10,6 @@
 *.swo
 *.tmp
 command.txt
+vkontakte_backup.sql
 
 

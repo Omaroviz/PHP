@@ -32,12 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
 <body>
 <header style="">
 	<div class="vkontakte-main-panel">
-		<a href="vkontakte.html" class="vkontakte-text">
+		<a href="vkontakte.php" class="vkontakte-text">
 			<span class="vkontakte-main-text-B">В</span>контакте
 		</a>
 		<div class="vk-left">
-			<a href="profile.html" class="vk-button">Моя страница</a>
-			<a href="friends.html" class="vk-button">Друзья</a>
+			<a href="profile.php" class="vk-button">Моя страница</a>
+			<a href="friends.php" class="vk-button">Друзья</a>
 		</div>
 
 		<div class="vk-right" id="vk-right">
@@ -59,13 +59,13 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
 <main class="page-layout">
 	<aside class="sidebar">
 		<div class="friends-mini" style="justify-content: normal">
-			<span id="userNameHTML" class="sidebar-userName">
+			<span id="userNameHTML" class="sidebar-userName"><b>
 <?php
 if (isset($_SESSION['name'])) {
 	echo $_SESSION['name'];
 } else {echo "Гость";}
 ?>
-</span>
+</b></span>
 		</div>
 		<nav>
 			<h2 style="margin: 10px;"><em>....Стена Новостей</em></h2>

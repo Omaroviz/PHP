@@ -13,9 +13,17 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" &&
 	// echo "<br><code>// Отладка: ";var_dump($user);echo "</code><br>";
 	// Пока не будет добавлен файл registration.php, расхеширование паролей не будет!
 	if (password_verify($_POST['password'], $user['password'])) {
-		// echo "Пароли совпадают!";
 		$_SESSION['name'] = $user['name'];
 		$_SESSION['username'] = $user['username'];
+		$_SESSION['id'] = $user['id'];
+		$stmt = $pdo->prepare('SELECT id FROM users_info WHERE id = :id');
+		$stmt->execute([':id' => $_SESSION['id']]);
+		$user = $stmt->fetch();
+		if (!$user) {
+			$stmt = $pdo->prepare("INSERT INTO users_info(id) VALUES(:id)");
+			$stmt->execute([':id' => $_SESSION['id']]);
+		}
+
 		header("Location: vkontakte.php");
 		exit();
 
