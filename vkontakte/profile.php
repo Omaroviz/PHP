@@ -4,11 +4,19 @@ include_once 'login.php';
 
 session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])) {
-	if (isset($_SESSION['id'])) {
-		header('Location: vkontakte.php');
-		exit();
-	}
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])
+	&& !empty($_POST['title']) && !empty($_POST['text'])) {
+	$sql = "INSERT INTO posts(title, text, author, author_id, post_from) VALUES(:title, :text, :author, :author_id, :post_from)";
+	$stmt = $pdo->prepare($sql);
+	$stmt->execute([
+		":title" => $_POST['title'],
+		":text" => $_POST['text'],
+		":author" => $_SESSION['username'],
+		":author_id" => $_SESSION['id'],
+		":post_from" => $_GET['id']
+	]);
+	header("Location: ".$_SERVER['REQUEST_URI']);
+	exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['city_btn'])) {
@@ -17,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['city_btn'])) {
 	$stmt = $pdo->prepare("UPDATE users_info SET city = :city WHERE id = :id");
 	$stmt->execute([
 		':city' => $_POST['city'],
-		':id' => $_SESSION['id'],
+		':id' => $_SESSION['id']
 	]);
 	header('Location: profile.php?id='.$_SESSION['id']);
 	exit();
@@ -81,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 <body>
 <header style="">
 	<div class="vkontakte-main-panel">
-		<a href="vkontakte.html" class="vkontakte-text">
+		<a href="vkontakte.php" class="vkontakte-text">
 			<span class="vkontakte-main-text-B">В</span>контакте
 		</a>
 		<div class="vk-left">
@@ -90,9 +98,12 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 		</div>
 
 		<div class="vk-right" id="vk-right">
-			<form method="POST" action="find_user.php" style="margin: 0; padding: 0">
-			<input type="text" placeholder="Поиск" style="padding-left: 9px;">
-			<button type="submit" name="find_user_btn">Поиск</button></form>
+
+			<form method="GET" action="search.php" style="margin: 0; padding: 0">
+			<input type="text" name="find" placeholder="Поиск" style="margin: 0; padding-left: 9px;">
+			<button type="submit">Поиск</button>
+			</form>
+
 			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
 			<a href="#" class="vk-button">Поиск</a>
 			<a href="login.html" class="vk-button" id="userStatus">Вход</a>
@@ -172,14 +183,32 @@ echo nl2br(htmlspecialchars(wordwrap($about, 30, "\n", true)));	?>
 					<div class="profile-post-container">
 						<div class="post">
 							<form method="POST">
-								<p class="postmain">Новый пост</p`>
+								<p class="postmain">Новый пост</p>
 								<textarea name="title" id="postName" placeholder="Заголовок" class="createPostName"></textarea>
 								<textarea name="text" id="postInput" placeholder="Что у вас нового?" class="createPostText"></textarea>
 								<!-- <input type="text" id="postCommand" placeholder="Команда" class="createPostCommand"> -->
 								<button type="submit" name="add_post" class="createPostButton">Опубликовать</button>
 							</form>
 						</div>
-				</div>
+						<?php
+							$sql = "SELECT * FROM posts WHERE post_from = :id ORDER BY id DESC";
+							$stmt = $pdo->prepare($sql);
+							$stmt->execute([':id' => $_GET['id']]);
+							$post = $stmt->fetchAll();
+?>
+<?php if (count($post) > 0): ?>
+    <?php foreach ($post as $info): ?>
+        <div class="post">
+            <h3><?php echo htmlspecialchars($info['title']); ?></h3>
+            <p><?php echo nl2br(htmlspecialchars($info['text'])); ?></p>
+            <small><?php echo htmlspecialchars($info['author']); ?></small>
+        </div>
+    <?php endforeach; ?>
+<?php else: ?>
+    <div class="post">
+        <p>Нет постов</p>
+    </div>
+<?php endif; ?>				</div>
 			</div>
 		</div>
 	</div>
