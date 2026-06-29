@@ -654,6 +654,7 @@ body {
 .search_write_a {
 	margin: 0 3px;
 	cursor: pointer;
+	text-decoration: none;
 	background-color: #3970A7;
 	color: white;
 	padding: 3px 6px;

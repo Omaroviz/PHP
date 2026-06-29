@@ -118,12 +118,18 @@ _END;
 </h3>
 _END;
 echo htmlspecialchars($post['text']);
-echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post['date'])." | ".htmlspecialchars($post['author'])."</small>";
-	$stmt = $pdo->prepare("SELECT * FROM posts WHERE id = :id");
-	$stmt->execute([":id" => $post["id"]]);
-	$info = $stmt->fetch();
+if (is_numeric($post['post_from'])) {
+$sql = "SELECT username FROM users WHERE id = :post_from";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([':post_from' => $post['post_from']]);
+//var_dump($stmt->fetch());
+$post_by = $stmt->fetch();
+echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post['date'])." | ".htmlspecialchars($post['author'])." |       На стене @".$post_by['username']."</small>";
+} else {
+	echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post['date'])." | ".htmlspecialchars($post['author'])." | ".$post['post_from']."</small>"; 
+}
 	if (isset($_SESSION['username'])) {
-	if ($_SESSION['username'] === $info['author'] || $_SESSION['username'] == "admin"){
+	if ($_SESSION['username'] === $post['author'] || $_SESSION['username'] == "admin"){
 	echo '</p><a class="vk-button" href="?delete_id='.$post['id'].'">Удалить</a>';
 	}
 	}

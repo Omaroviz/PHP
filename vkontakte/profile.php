@@ -4,6 +4,11 @@ include_once 'login.php';
 
 session_start();
 
+if (!isset($_SESSION['username'])) {
+	header('Location: sign.php');
+	exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])
 	&& !empty($_POST['title']) && !empty($_POST['text'])) {
 	$sql = "INSERT INTO posts(title, text, author, author_id, post_from) VALUES(:title, :text, :author, :author_id, :post_from)";
