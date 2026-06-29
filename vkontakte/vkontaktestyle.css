@@ -707,6 +707,31 @@ body {
 	margin: 10px 10px;
 }
 
+.search_input {
+	height: 50px;
+	width: 300px;
+	margin: 10px;
+	text-align: center;
+	border-radius: 5px;
+	border: 1px solid black;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
 
+}
 
+.search_input_div {
+	
+	align-items: center;
+	box-sizing: border-box;
+	display: flex;
 
+}
+
+.search_input_btn {
+
+	height: 40px;
+	font-size: 15px;
+
+}

@@ -42,10 +42,11 @@ session_start();
 </header>
 <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
 <main class="search_main">
+<h2 class="search_h">Люди</h2>
 <?php
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['find'])) {
-echo '<h2 class="search_h">Люди</h2>';
-$sql = "SELECT * FROM users WHERE id = :text OR name LIKE :text OR username LIKE :text";
+
+$sql = "SELECT * FROM users WHERE id = :text OR name = :text OR username = :text";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([':text' => $_GET['find']]);
 $users = $stmt->fetchAll();
@@ -94,20 +95,6 @@ foreach ($posts as $post) {
 }} else {
 echo "<h4>Ничего не найдено</h4>";
 	}
-} else {
-
-	echo <<<_END
-		<form method='GET'>
-		<div class="search_input_div">
-		<input class='search_input' type='text' name='find' placeholder='Введите запрос'>
-		<button type='submit' class='search_input_btn'>Поиск</button>
-		</div>
-		</form>
-		_END;
-if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['find'])) {
-	header('Location: search.php?find='.$_GET['find']);
-	exit();
-}
 }
 ?>
 </main>
