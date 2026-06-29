@@ -1,0 +1,101 @@
+<?php
+
+include_once 'login.php';
+
+session_start();
+
+$stmt = $pdo->query('SELECT * FROM users');
+$users = $stmt->fetchAll();
+
+?>
+
+	<!DOCTYPE html>
+	<html lang="ru">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="vkontaktestyle.css" type="text/css" media="all"/>
+		<title>Мои друзья</title>
+	</head>
+
+	<body>
+	<header style="">
+		<div class="vkontakte-main-panel">
+		<a href="vkontakte.html" class="vkontakte-text">
+			<span class="vkontakte-main-text-B">В</span>контакте
+		</a>
+		<div class="vk-left">
+			<a href="profile.html" class="vk-button">Моя страница</a>
+			<a href="friends.html" class="vk-button">Друзья</a>
+		</div>
+	
+		<div class="vk-right" id="vk-right">
+			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
+			<a href="#" class="vk-button">Поиск</a>
+			<a href="login.html" class="vk-button" id="userStatus">Вход</a>
+		</div>
+	</div>
+
+	</header>
+	<main class="friends-page-layout">
+		<aside class="friends-sidebar">
+					<div class="friends-mini" style="justify-content: normal">
+						<span class="friends-mini-logo" id="friends-userNameTwo"></span>
+						<span id="friends-userName-friends-mini" class="sidebar-userName">userName</span>
+					</div>
+			Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum, dolorem doloribus eius et excepturi fugit magni nemo nobis numquam optio, porro quibusdam quidem quisquam recusandae repellat sint suscipit ut voluptatem!
+		</aside>
+
+		<div class="main-content">
+<?php
+foreach ($users as $user) {
+
+	$stmt = $pdo->prepare("SELECT * FROM users_info WHERE id = :id");
+	$stmt->execute([':id' => $user['id']]);
+	$user_info = $stmt->fetch();
+
+echo <<<_END
+			<article class="friends-window">
+				<div class="friends-mini">
+					<span class="friends-mini-logo">DO</span>
+_END;
+					echo htmlspecialchars($user['name']);
+echo <<<_END
+					<div class="friends-mini-buttons">
+						<a href="#" class="friends-button">Позвонить</a>
+						<a href="#" class="friends-button">Написать</a>
+					</div>
+				</div>
+				_END;
+if (isset($user_info['about'])) {
+	echo htmlspecialchars($user_info['about']);
+}
+echo <<<_END
+			</article>
+			_END;
+			}
+		?>
+		</div>
+	</main>
+	</body>
+
+	</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
