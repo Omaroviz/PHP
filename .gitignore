@@ -11,5 +11,7 @@
 *.tmp
 command.txt
 vkontakte_backup.sql
+accounts.txt
+
 
 

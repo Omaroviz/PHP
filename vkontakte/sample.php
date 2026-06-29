@@ -42,23 +42,32 @@ session_start();
 </header>
 <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
 <main class="search_main">
-
+<h2 class="search_h">Люди</h2>
 <?php
+if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['find'])) {
+
 $sql = "SELECT * FROM users WHERE id = :text OR name = :text OR username = :text";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([':text' => "stepa"]);
+$stmt->execute([':text' => $_GET['find']]);
 $users = $stmt->fetchAll();
+if ($users) {
 foreach ($users as $user) {
 	echo <<<_END
+<a href="google.com" style="all: unset;">
 <div class="search_box">
 <span class="search_info"> 
 <span class="search_avatar">MH</span>
 <span class="search_info_text">
 <span class="search_name">
-{$user['name']}
+_END;
+echo htmlspecialchars($user['name']);
+echo <<<_END
 </span>
-<span class="search_username">
-@{$user['username']}
+<span class="search_username">@
+_END;
+
+echo htmlspecialchars($user['username']);
+echo <<<_END
 </span>
 </span>
 </span>
@@ -67,7 +76,27 @@ foreach ($users as $user) {
 <a class="search_write_a">Добавить</a>
 </span>
 </div>
+</a>
 _END;
+}} else {
+	echo "<h4>Ничего не найдено</h4>";
+
+}
+
+echo "<h2 class='search_h'>Посты</h2>";
+$sql = "SELECT * FROM posts WHERE title = :text";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([":text" => $_GET['find']]);
+$posts = $stmt->fetchAll();
+if ($posts) {
+foreach ($posts as $post) {
+	echo "<div class='post'>";
+	echo "<h3 style='margin: 0;'>".htmlspecialchars($post['title'])."</h3>";
+	echo htmlspecialchars($post['text']);
+	echo "</div>";
+}} else {
+echo "<h4>Ничего не найдено</h4>";
+	}
 }
 ?>
 </main>
