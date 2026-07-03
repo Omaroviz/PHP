@@ -140,7 +140,13 @@ if ($edit_profile) {echo '<button class="vk-button-btn" style="max-width: 100px;
 ?>
 </li>
 							<li>
-								<label for="city-select">Город: <?php echo $profile_info['city'];?></label>
+								<label for="city-select">Город: <?php 
+if (isset($user_info['city'])) {
+	echo htmlspecialchars($profile_info['city']);}
+else {
+echo "Не выбрано";
+}
+?></label>
 								<?php
 								if ($edit_profile) {
 								echo <<<_END

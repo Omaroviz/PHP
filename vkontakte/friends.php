@@ -71,8 +71,8 @@ return $stmt->fetch();
 					</div>
 					<?php
 						//var_dump($_SESSION);
-						if ($_SESSION['id']) {
-							echo user_info($_SESSION['id'])['about'];
+						if (isset($_SESSION['id'])) {
+							echo htmlspecialchars(user_info($_SESSION['id'])['about']);
 						}
 					?>
 		</aside>
