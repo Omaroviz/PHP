@@ -4,9 +4,15 @@ include_once 'login.php';
 
 session_start();
 
-$stmt = $pdo->query('SELECT * FROM users');
+$stmt = $pdo->query('SELECT * FROM users ORDER BY id DESC');
 $users = $stmt->fetchAll();
 
+function user_info($id) {
+global $pdo;
+$stmt = $pdo->prepare('SELECT * FROM users_info WHERE id = :id');
+$stmt->execute([':id' => $id]);
+return $stmt->fetch();
+}
 ?>
 
 	<!DOCTYPE html>
@@ -22,18 +28,18 @@ $users = $stmt->fetchAll();
 	<body>
 	<header style="">
 		<div class="vkontakte-main-panel">
-		<a href="vkontakte.html" class="vkontakte-text">
+		<a href="vkontakte.php" class="vkontakte-text">
 			<span class="vkontakte-main-text-B">В</span>контакте
 		</a>
 		<div class="vk-left">
-			<a href="profile.html" class="vk-button">Моя страница</a>
-			<a href="friends.html" class="vk-button">Друзья</a>
+			<a href="profile.php" class="vk-button">Моя страница</a>
+			<a href="friends.php" class="vk-button">Друзья</a>
 		</div>
 	
 		<div class="vk-right" id="vk-right">
 			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
 			<a href="#" class="vk-button">Поиск</a>
-			<a href="login.html" class="vk-button" id="userStatus">Вход</a>
+			<a href="sign.php" class="vk-button" id="userStatus">Вход</a>
 		</div>
 	</div>
 
@@ -41,10 +47,24 @@ $users = $stmt->fetchAll();
 	<main class="friends-page-layout">
 		<aside class="friends-sidebar">
 					<div class="friends-mini" style="justify-content: normal">
-						<span class="friends-mini-logo" id="friends-userNameTwo"></span>
-						<span id="friends-userName-friends-mini" class="sidebar-userName">userName</span>
+						<!--<span class="friends-mini-logo" id="friends-userNameTwo">DO</span>-->
+						<span id="friends-userName-friends-mini" class="sidebar-userName">
+						<b><?php 
+						if (isset($_SESSION['id'])) {
+							echo $_SESSION['name'];
+						} else {
+							echo "Guest";}
+						?>
+
+						</b>
+						</span>
 					</div>
-			Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum, dolorem doloribus eius et excepturi fugit magni nemo nobis numquam optio, porro quibusdam quidem quisquam recusandae repellat sint suscipit ut voluptatem!
+					<?php
+						//var_dump($_SESSION);
+						if ($_SESSION['id']) {
+							echo user_info($_SESSION['id'])['about'];
+						}
+					?>
 		</aside>
 
 		<div class="main-content">
@@ -63,16 +83,16 @@ _END;
 					echo htmlspecialchars($user['name']);
 echo <<<_END
 					<div class="friends-mini-buttons">
-						<a href="#" class="friends-button">Позвонить</a>
+						<a href="profile.php?id={$user['id']}" class="friends-button">Профиль</a>
 						<a href="#" class="friends-button">Написать</a>
 					</div>
-				</div>
+				</div><p style='margin: 8px 0 5px 0'>
 				_END;
 if (isset($user_info['about'])) {
 	echo htmlspecialchars($user_info['about']);
 }
 echo <<<_END
-			</article>
+			</p></article>
 			_END;
 			}
 		?>
