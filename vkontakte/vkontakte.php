@@ -41,11 +41,16 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
 		</div>
 
 		<div class="vk-right" id="vk-right">
+			<form method="GET" action="search.php" style="margin: 0; padding: 0">
+			<input type="text" name="find" placeholder="Поиск" style="margin: 0; padding-left: 9px;">
+			<button type="submit">Поиск</button>
+			</form>
+
 			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
-			<a href="#" class="vk-button">Поиск</a>
+			<a href="search.php" class="vk-button">Поиск</a>
 			<?php 
 			if (isset($_SESSION['username'])) {
-				echo "<a href='logout.php' class='vk-button'>Выйти</a>";
+				echo "<a href='logout.php' class='vk-button'>Выход</a>";
 			} else {
 				echo "<a href='sign.php' class='vk-button' id='userStatus'>Вход</a>";
 			}

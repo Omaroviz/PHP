@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 		</a>
 		<div class="vk-left">
 			<a href="profile.html" class="vk-button">Моя страница</a>
-			<a href="friends.html" class="vk-button">Друзья</a>
+			<a href="friends.php" class="vk-button">Друзья</a>
 		</div>
 
 		<div class="vk-right" id="vk-right">
@@ -110,8 +110,14 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 			</form>
 
 			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
-			<a href="#" class="vk-button">Поиск</a>
-			<a href="login.html" class="vk-button" id="userStatus">Вход</a>
+			<a href="search.php" class="vk-button">Поиск</a>
+			<?php
+if (isset($_SESSION['id'])) {
+	echo '<a href="logout.php" class="vk-button" id="userStatus">Выход</a>';
+} else {
+	echo '<a href="sign.php" class="vk-button" id="userStatus">Вход</a>';
+}
+?>
 		</div>
 	</div>
 
