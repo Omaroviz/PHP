@@ -1,0 +1,102 @@
+[33mcommit cc1eed80c29c6c04203975096ae65e030a2b7dc8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32msearch[m[33m, [m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 29 17:21:34 2026 +0300
+
+    Доделал стили, переименовал sample.php в search.php
+
+[33mcommit 5dc3f92e450b17daafdff0ef3e602bab6ed32b91[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 29 14:03:49 2026 +0300
+
+    Сделал в sample.php поиск по постам
+
+[33mcommit 01737ed26247192c3fd7d8bad5a3538ccac99878[m[33m ([m[1;31morigin/test[m[33m, [m[1;32mtest[m[33m)[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Sun Jun 28 21:38:16 2026 +0300
+
+    GUI search.php IN sample.php
+
+[33mcommit 2b02979d522bd29968d9fdeb7163df12adaa8270[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Sun Jun 28 13:25:59 2026 +0300
+
+    Сделал поиск по людям, постам и сообществам (скоро). Делаю новую странцу чтобы выглядело красиво
+
+[33mcommit 32c5a060849586596126ed6f23669efc8e4e55d6[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Sat Jun 27 14:48:59 2026 +0300
+
+    Начал переделывать проект 'ВКонтакте Druza' на PHP. Работает система пользователей, система general постов и общедоступные странички пользователей, открывающеся через ID
+
+[33mcommit ee10fa54727eb89921db2d57e44faecd4c06c8ea[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Thu Jun 25 13:42:32 2026 +0300
+
+    Начал делать социальную сеть 'ВКонтакте Druza' на PHP и MySQL
+
+[33mcommit 6ac15663d1d887f73551d22e2765063b7d3f24d8[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 22 18:17:51 2026 +0300
+
+    Добавлен about.php.
+
+[33mcommit 44b5d68e3e65189a8cf4e0df2f05d7331dc291ed[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 22 16:55:21 2026 +0300
+
+    pagination.php  улучшен
+
+[33mcommit b8ae5b5f658659e8949240dc4d1b6c414b1a59f7[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 22 14:19:40 2026 +0300
+
+    Command.txt добавлен в .gitignore
+
+[33mcommit 26ae498b69028dbdb10c3dd1c9b5fe830e466171[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 22 14:14:03 2026 +0300
+
+    Добавил .gitignore, исключил временные файлы
+
+[33mcommit 665395599e5f2d3b40d308e7f0fdf89571c0de2d[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 22 14:12:41 2026 +0300
+
+    Добавил .gitignore, исключил временные файлы
+
+[33mcommit c1731994f446c72662314aa1fd710337f720ab40[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 22 14:12:29 2026 +0300
+
+    Добавил .gitignore, исключил временные файлы
+
+[33mcommit d65493871bedc0d9f0687b9252e7f212c9b5a5b9[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 22 14:12:10 2026 +0300
+
+    Добавил .gitignore, исключил временные файлы
+
+[33mcommit ba9520ddbc6271fe0e4e86a8b388d3f35f207c19[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 22 14:06:26 2026 +0300
+
+    Записал все файлы в git
+
+[33mcommit 732d0f17538175bc5b18c79517e8f7c6778ae7a3[m
+Merge: 59c3d1c e1de803
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 15 18:02:51 2026 +0300
+
+    Merge branch 'main' of https://github.com/Omaroviz/PHP
+
+[33mcommit e1de803699895b72fc877c66603927e2b2895cc2[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 15 17:57:16 2026 +0300
+
+    Initial commit
+
+[33mcommit 59c3d1cb10aa339ffa7af643323008d65a5ba2af[m
+Author: Omaroviz <omaroviz1990@gmail.com>
+Date:   Mon Jun 15 17:49:17 2026 +0300
+
+    Commit
