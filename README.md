@@ -3,9 +3,9 @@
 Простая социальная сеть на PHP и MySQL.
 
 ## Установка
-1. Скопируй файлы в `htdocs`.
-2. Импортируй `vkontakte_backup.sql` в MySQL.
-3. Открой `http://localhost/vkontakte/`.
+1. Скопируйте файлы в `htdocs`.
+2. Импортируйте `vkontakte_backup.sql` в MySQL.
+3. Откройте `http://localhost/vkontakte/`.
 
 ## Технологии
 - PHP 8+
