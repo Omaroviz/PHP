@@ -9,16 +9,60 @@ if (!isset($_SESSION['id'])){
 	exit();
 }
 
-echo "Продолжение.<br>";
 ?>
 
-
 <!DOCTYPE html>
-<html lang='ru'>
+<html lang="ru">
+
 <head>
-<title>Аккаунт</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="vkontaktestyle.css">
+	<link rel="icon" href="media/vkontakte.ico">
+	<title>Вконтакте Druza</title>
 </head>
+
 <body>
+<header style="">
+	<div class="vkontakte-main-panel">
+		<a href="vkontakte.php" class="vkontakte-text">
+			<span class="vkontakte-main-text-B">В</span>контакте
+		</a>
+		<div class="vk-left">
+			<a href="profile.php" class="vk-button">Моя страница</a>
+			<a href="friends.php" class="vk-button">Друзья</a>
+		</div>
+
+		<div class="vk-right" id="vk-right">
+			<form method="GET" action="search.php" style="margin: 0; padding: 0">
+			<input type="text" name="find" placeholder="Поиск" style="margin: 0; padding-left: 9px;">
+			<button type="submit">Поиск</button>
+			</form>
+
+			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
+			<a href="search.php" class="vk-button">Поиск</a>
+			<?php 
+			if (isset($_SESSION['username'])) {
+				echo "<a href='logout.php' class='vk-button'>Выход</a>";
+			} else {
+				echo "<a href='sign.php' class='vk-button' id='userStatus'>Вход</a>";
+			}
+		?>
+		</div>
+	</div>
+
+</header>
+
+<main class='account_loyaut'>
+
+<div class='account_box'>
+
+<div class='account_box_header'>
+<a href='' class='account_box_header_btn' >Аккаунт</a>
+<a href='' class='account_box_header_btn' >Личная информация</a>
+</div>
+
+<div>
 <h2>Изменить пароль</h2>
 <form method='POST'>
 
@@ -59,7 +103,9 @@ if (
 	echo "Заполните все поля!";
 }
 ?>
-
+</div>
+</div>
+</main>
 </body>
 <html>	
 

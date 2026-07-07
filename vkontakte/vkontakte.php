@@ -149,7 +149,7 @@ echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($pos
 	</div>
 </main>
 <footer id="vniz" style="margin: 0;">
-	<a href="#" class="vk-button" onclick="confirm('О сайте.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nПривет')">О сайте</a>
+	<a href="#" class="vk-button" onclick="confirm('Fork me? Fork you! @octocat')">О сайте</a>
 	"Вконтакте Druza" ООО. Все права защищены. Распространения кода сайта разрешено с <a href="#">условиями
 	конфидициальности</a> на сайте GitHub.
 </footer>

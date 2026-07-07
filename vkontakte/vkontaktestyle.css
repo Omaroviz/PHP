@@ -735,3 +735,39 @@ body {
 	font-size: 15px;
 
 }
+
+.account_box {
+	background-color:#dedede;
+	max-width: 1000px;
+	border: 1px solid grey;
+	margin: 10px auto;
+	border-radius: 10px;
+	padding: 0;
+	display: flex;
+	justify-content: column;
+	flex-direction: column;
+}
+
+.account_loyaut {
+	align-items: center;
+}
+
+.account_box_header {
+	background-color:#bab8b8;
+	border-radius: 10px 10px 0 0;
+	border: 1px solid grey;
+	margin: 0;
+}
+
+.account_box_header_btn {
+	text-decoration: none;
+	color: black;
+	background-color: none;
+	margin: 5px;
+	display: inline-block;
+	border-radius: 3px;
+}
+
+.account_box_header_btn:hover {
+	color: #363636;
+}
