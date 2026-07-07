@@ -78,6 +78,7 @@ return $stmt->fetch();
 		</aside>
 
 		<div class="main-content">
+		<h1>Все люди</h1>
 <?php
 foreach ($users as $user) {
 

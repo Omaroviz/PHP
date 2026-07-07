@@ -133,7 +133,7 @@ if (isset($_SESSION['id'])) {
 						<h1 class="profileName"><span><?php echo htmlspecialchars($profile['name']);?></span></h1>
 						<h3>Личная информация:</h3>
 						<ul>
-						<li>Никнейм: <span id="profile-info-userName"><?php echo htmlspecialchars($profile['username'])?></span></li>
+						<li>Никнейм: @<span id="profile-info-userName"><?php echo htmlspecialchars($profile['username'])?></span></li>
 							<li>Возраст: <span id="profile-info-age">21</span>
 <?php
 if ($edit_profile) {echo '<button class="vk-button-btn" style="max-width: 100px; text-align: center; padding: 1px; font-size: 10px">Изменить</button>';}
@@ -141,7 +141,7 @@ if ($edit_profile) {echo '<button class="vk-button-btn" style="max-width: 100px;
 </li>
 							<li>
 								<label for="city-select">Город: <?php 
-if (isset($user_info['city'])) {
+if (isset($profile_info['city'])) {
 	echo htmlspecialchars($profile_info['city']);}
 else {
 echo "Не выбрано";
@@ -186,7 +186,7 @@ echo "Не выбрано";
 <li>    <form method="POST">
 	<label>О себе: </label>
 	    <span><?php 
-	$about = $profile_info['about'] ?? '';
+	$about = $profile_info['about'] ?? 'Ничего нет';
 echo nl2br(htmlspecialchars(wordwrap($about, 30, "\n", true)));	?>
 <?php if ($edit_profile) { ?>
             <textarea name="about" placeholder="Напишите о себе..."></textarea><br>

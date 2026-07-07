@@ -131,7 +131,7 @@ $stmt->execute([':post_from' => $post['post_from']]);
 $post_by = $stmt->fetch();
 echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post['date'])." | ".htmlspecialchars($post['author'])." |       На стене @".$post_by['username']."</small>";
 } else {
-	echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post['date'])." | ".htmlspecialchars($post['author'])." | ".$post['post_from']."</small>"; 
+	echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post['date'])." | ".htmlspecialchars($post['author'])."</small>"; 
 }
 	if (isset($_SESSION['username'])) {
 	if ($_SESSION['username'] === $post['author'] || $_SESSION['username'] == "admin"){
