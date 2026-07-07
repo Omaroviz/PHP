@@ -8,7 +8,11 @@ if (!isset($_SESSION['id'])){
 	header("Location: sign.php");
 	exit();
 }
+if (!isset($_GET['site'])) {
+	header("Location: account.php?site=main");
+	exit();
 
+}
 ?>
 
 <!DOCTYPE html>
@@ -58,10 +62,14 @@ if (!isset($_SESSION['id'])){
 <div class='account_box'>
 
 <div class='account_box_header'>
-<a href='' class='account_box_header_btn' >Аккаунт</a>
-<a href='' class='account_box_header_btn' >Личная информация</a>
+<a href='account.php?site=main' class='account_box_header_btn' >Аккаунт</a>
+<a href='account.php?site=info' class='account_box_header_btn' >Личная информация</a>
+<a href='account.php?site=password' class='account_box_header_btn' >Пароль</a>
 </div>
-
+<?php
+if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['site'])) {
+	if ($_GET['site'] === "password") {
+		echo <<<_END
 <div>
 <h2>Изменить пароль</h2>
 <form method='POST'>
@@ -71,9 +79,14 @@ if (!isset($_SESSION['id'])){
 <input type='text' name='new2_password' placeholder='Повторите пароль' required><br>
 <button type='submit' name='edit_password_btn'>Готово</button>
 </form>
-
+</div>
+_END;
+	}
+}?>
 <?php
 if (
+	$_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_password_btn']) &&
+	isset($_GET['site']) && $_GET['site'] === "password" &&
 	!empty($_POST['old_password']) &&
 	!empty($_POST['new_password']) &&
 	!empty($_POST['new2_password'])
@@ -99,8 +112,10 @@ if (
 		echo 'Новые пароли не совпадают!';
 	}
 
-} else {
-	echo "Заполните все поля!";
+} 
+
+if (isset($_GET['site']) && $_GET['site'] === "main") {
+	echo "<h3 style='text-align: center'>Управление аккаунтом</h3>";
 }
 ?>
 </div>
