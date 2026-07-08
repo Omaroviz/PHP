@@ -117,6 +117,32 @@ if (
 if (isset($_GET['site']) && $_GET['site'] === "main") {
 	echo "<h3 style='text-align: center'>Управление аккаунтом</h3>";
 }
+
+if (isset($_GET['site']) && $_GET['site'] === "info") {
+	$name = htmlspecialchars($_SESSION['name']);
+	$stmt = $pdo->prepare("SELECT i.id, i.city, i.about, i.age 
+FROM users u 
+JOIN users_info i ON u.id = i.id 
+WHERE u.id = :id");
+	$stmt->execute([':id' => $_SESSION['id']]);
+	$user_info = $stmt->fetch();
+	$user_age = $user_info['age'];
+	$user_about = $user_info['about'];
+	$user_city = $user_info['city'];
+	$username = htmlspecialchars($_SESSION['username']);
+	$age = htmlspecialchars($_SESSION['name']);
+	echo <<<_END
+		<h3 style='text-align: center'>Личная информация</h3>
+		<div class='account_info_info'>
+		<p class='account_info_p'>Имя: {$name} <a href='edit_info.php?site=name' class='account_info_btn'>Изменить</a></p> 
+		<p class='account_info_p'>Никнейм: @{$username} <button class='account_info_btn'>Изменить</button></p>
+		<p class='account_info_p'>Возраст: {$user_age} <button class='account_info_btn'>Изменить</button></p>
+		<p class='account_info_p'>Город: {$user_city} <button class='account_info_btn'>Изменить</button></p>
+		<p class='account_info_p'>О себе: {$user_about} <a class='account_info_btn'>Изменить</a></p>
+		</div>
+_END;
+	
+}
 ?>
 </div>
 </div>
