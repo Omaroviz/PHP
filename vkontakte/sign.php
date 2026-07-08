@@ -54,13 +54,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" &&
 			<span class="vkontakte-main-text-B">В</span>контакте
 		</a>
 		<div class="vk-left">
-			<a href="about.php" class="vk-button">Моя страница</a>
-			<a href="about.php" class="vk-button">Друзья</a>
+			<a href="profile.php" class="vk-button">Моя страница</a>
+			<a href="friends.php" class="vk-button">Друзья</a>
 		</div>
 
 		<div class="vk-right" id="vk-right">
 			<a href="about.php" class="vk-button">Сообщения</a>
-			<a href="#" class="vk-button">Поиск</a>
+			<a href="search.php" class="vk-button">Поиск</a>
 			<a href="register_test.php" class="vk-button" id="userStatus">Регистрация</a>
 		</div>
 	</div>
@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" &&
 		</div>
 		
 		<div style="margin: 10px 0;">
-			<button type="submit" name="sign_btn" class="createPostButton" onclick="login()">Вход</button>
+			<button type="submit" name="sign_btn" class="createPostButton">Вход</button>
 		</form>
 			<a type="button" class="vk-button" href="register_test.php">Регистрация</a>
 		</div>

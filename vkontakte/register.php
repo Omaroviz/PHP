@@ -18,6 +18,10 @@ echo <<<_END
 
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register_btn'])) {
 	echo codetext("Отладка","получил POST-запрос");
+	$username = trim($_POST['username']);
+	if (!preg_match('/^[A-Za-z0-9_]+$/', $username)) {
+		$error = "Логин может содержать только латиницу, цифры и _";
+	} else {
 	$sql = "SELECT * FROM users WHERE username = :username";
 	$stmt = $pdo->prepare($sql);
 	$stmt->execute([":username" => $_POST['username']]);
@@ -35,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register_btn'])) {
 		]);
 		header("Location: " . $_SERVER['PHP_SELF']);
     		exit();
+	}
 	}
 }
 

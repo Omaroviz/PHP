@@ -9,6 +9,25 @@ include_once "login.php";
 
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register_btn'])) {
 	echo codetext("Отладка","получил POST-запрос");
+	$name = trim($_POST['name']);
+    $username = trim($_POST['username']);
+    $password = $_POST['password'];
+    
+    // Проверка логина (только латиница, цифры, _)
+    if (!preg_match('/^[A-Za-z0-9_]+$/', $username)) {
+        echo "Логин может содержать только латиницу, цифры и _";
+        exit();
+    }
+    
+    if (strlen($username) < 6) {
+        echo "Логин должен быть не короче 6 символов";
+        exit();
+    }
+    
+    if (strlen($password) < 8) {
+        echo "Пароль должен быть не короче 8 символов";
+        exit();
+    }
 	$sql = "SELECT * FROM users WHERE username = :username";
 	$stmt = $pdo->prepare($sql);
 	$stmt->execute([":username" => $_POST['username']]);
@@ -24,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register_btn'])) {
 			":username" => $_POST['username'], 
 			":password" => password_hash($_POST['password'], PASSWORD_DEFAULT),
 		]);
+
 		header("Location: " . $_SERVER['PHP_SELF']);
     		exit();
 	}
@@ -45,13 +65,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register_btn'])) {
 			<span class="vkontakte-main-text-B">В</span>контакте
 		</a>
 		<div class="vk-left">
-			<a href="about.php" class="vk-button">Моя страница</a>
-			<a href="about.php" class="vk-button">Друзья</a>
+			<a href="profile.php" class="vk-button">Моя страница</a>
+			<a href="friends.php" class="vk-button">Друзья</a>
 		</div>
 
 		<div class="vk-right" id="vk-right">
 			<a href="about.php" class="vk-button">Сообщения</a>
-			<a href="" class="vk-button">Поиск</a>
+			<a href="search.php" class="vk-button">Поиск</a>
 			<a href="sign.php" class="vk-button" id="userStatus">Вход</a>
 		</div>
 	</div>
