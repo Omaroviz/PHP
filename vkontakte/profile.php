@@ -138,9 +138,15 @@ echo "Не выбрано";
 echo nl2br(htmlspecialchars(wordwrap($about, 30, "\n", true)));	?>
 </form>
 </li>
+<?php
+if ($edit_profile) {
+	echo <<<_END
 <li style='all: unset;'>
 <a href='account.php' style='display: inline-block; margin: 0;'>Изменить</a>
 </li>
+_END;
+}
+?>
 						</ul>
 					</div>
 					<div class="profile-post-container">

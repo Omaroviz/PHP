@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
 			<button type="submit">Поиск</button>
 			</form>
 
-			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
+			<a href="account" class="vk-button">Настройки</a>
 			<a href="search.php" class="vk-button">Поиск</a>
 			<?php 
 			if (isset($_SESSION['username'])) {

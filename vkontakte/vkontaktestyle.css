@@ -774,6 +774,7 @@ body {
 
 .account_info_info {
 	margin: 0 10px;
+	margin: auto;
 }
 
 .account_info_p {
@@ -782,6 +783,7 @@ body {
 
 .account_info_btn {
 	color:#141414;
+	text-decoration: none;
 	background-color:#e9e9ed;
 	padding: 0 4px;
        	cursor: pointer;	
@@ -796,4 +798,8 @@ body {
 .edit_info_input {
 	border-radius: 3px;
 
+}
+
+.edit_info_error {
+	text-align: center;
 }

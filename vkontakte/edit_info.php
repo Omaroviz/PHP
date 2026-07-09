@@ -3,7 +3,6 @@
 include_once 'login.php';
 
 session_start();
-
 if (!isset($_SESSION['id'])){
 	header("Location: sign.php");
 	exit();
@@ -70,6 +69,25 @@ if (!isset($_SESSION['id'])){
 <a href='edit_info.php?site=about' class='account_box_header_btn' >Изменить "О себе"</a>
 </div>
 <?php
+if (!isset($_GET['site'])) {
+	echo "<h3 style='text-align: center'>Изменить данные пользователя @".htmlspecialchars($_SESSION['username'])."</h3>";
+	$stmt = $pdo->prepare('SELECT * FROM users
+					JOIN users_info ON users.id = users_info.id
+					WHERE users.id = :id
+		');
+	$stmt->execute([':id' => $_SESSION['id']]);
+	echo "<small>Ваши данные: ";print_r($stmt->fetch());echo "</small>";
+
+}
+
+
+if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['site']) && $_GET['site'] === "main") {
+
+	header('Location: edit_info.php');
+	exit();
+
+}
+
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['site'])) {
 	if ($_GET['site'] === "age") {
 		echo <<<_END
@@ -151,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['site']) && $_GET['site'
 			_END;
 }
 if ($_SERVER['REQUEST_METHOD'] === "GET"  && isset($_GET['site']) && $_GET['site'] === 'bue') {
-	echo "<h3 style='text-align: center'>Готово</h3><p style=\"text-align: center;\"><a href=\"\">Перейти к настройкам</a> <br> <a href=\"\">Перейти на главную страницу</a></p>";
+	echo "<h3 style='text-align: center'>Готово</h3><p style=\"text-align: center;\"><a href=\"account.php\">Перейти к настройкам</a> <br> <a href=\"vkontakte.php\">Перейти на главную страницу</a></p>";
 }
 
 
@@ -183,7 +201,17 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_username_bt
 		echo "<b style='text-align: center'>Логин может содержать только латиницу, цифры и _<br><a href='edit_info.php?site=username'>Попробовать еще раз</a></b>";
 		exit();
 	} else {
-
+		
+		$stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username");
+		$stmt->execute([':username' => $username]);
+		if ($stmt->fetch()) {
+			echo "Данный никнейм занят!";
+			exit();
+		}
+	if (mb_strlen($username) < 6) {
+		echo "<b class='edit_info_error'>Длина никнейма должна быть больше 5 символов!<br><a href='edit_info?site=username'>Попробывать еще раз</b>";
+		exit();
+	}
 	$stmt = $pdo->prepare('UPDATE users SET username = :username WHERE id = :id');
 	$stmt->execute([
 		':username' => trim($_POST['edit_info_input']),

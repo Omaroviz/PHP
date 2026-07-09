@@ -42,7 +42,7 @@ if (!isset($_GET['site'])) {
 			<input type="text" name="find" placeholder="Поиск" style="margin: 0; padding-left: 9px;">
 			<button type="submit">Поиск</button>
 			</form>
-
+																						
 			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
 			<a href="search.php" class="vk-button">Поиск</a>
 			<?php 
@@ -135,10 +135,10 @@ WHERE u.id = :id");
 		<h3 style='text-align: center'>Личная информация</h3>
 		<div class='account_info_info'>
 		<p class='account_info_p'>Имя: {$name} <a href='edit_info.php?site=name' class='account_info_btn'>Изменить</a></p> 
-		<p class='account_info_p'>Никнейм: @{$username} <button class='account_info_btn'>Изменить</button></p>
-		<p class='account_info_p'>Возраст: {$user_age} <button class='account_info_btn'>Изменить</button></p>
-		<p class='account_info_p'>Город: {$user_city} <button class='account_info_btn'>Изменить</button></p>
-		<p class='account_info_p'>О себе: {$user_about} <a class='account_info_btn'>Изменить</a></p>
+		<p class='account_info_p'>Никнейм: @{$username} <a href='edit_info.php?site=username' class='account_info_btn'>Изменить</a></p>
+		<p class='account_info_p'>Возраст: {$user_age} <a  href='edit_info.php?site=age' class='account_info_btn'>Изменить</a></p>
+		<p class='account_info_p'>Город: {$user_city} <a  href='edit_info.php?site=city' class='account_info_btn'>Изменить</a></p>
+		<p class='account_info_p'>О себе: {$user_about} <a  href='edit_info.php?site=about' class='account_info_btn'>Изменить</a></p>
 		</div>
 _END;
 	
@@ -149,14 +149,3 @@ _END;
 </main>
 </body>
 <html>	
-
-
-
-
-
-
-
-
-
-
-
