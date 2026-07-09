@@ -71,8 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['site'])) {
 	if ($_GET['site'] === "password") {
 		echo <<<_END
 <div>
-<h2>Изменить пароль</h2>
-<form method='POST'>
+<h3 style='text-align: center;'>Изменить пароль</h2>
+<form method='POST' style='align-items: center;'>
 
 <input type='text' name='old_password' placeholder='Старый пароль' required><br>
 <input type='text' name='new_password' placeholder='Новый пароль' required><br>

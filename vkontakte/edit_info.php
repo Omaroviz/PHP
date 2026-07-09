@@ -81,7 +81,19 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['site'])) {
 			_END;
 	}
 
-}	
+}
+if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['site'])) {
+	if ($_GET['site'] === "about") {
+		echo <<<_END
+			<h3 style='text-align: center'>Изменить "О себе"</h3>
+			<form method="POST" style='margin: 0 auto 20px auto; align-items: center;'>
+			<textarea name='edit_info_input' style='resize: none; width: 300px; height: 100px; margin: 0' placeholder='Введите текст...'></textarea><br>
+			<button type='submit' name='edit_info_about_btn' class='edit_info_name_btn' name='edit_name'>Готово</button>
+			</form>
+			_END;
+	}
+
+}		
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['site'])) {
 	if ($_GET['site'] === "name") {
 		echo <<<_END
@@ -100,11 +112,59 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['site']) && $_GET['site'
 			<h3 style='text-align: center'>Изменить никнейм</h3>
 			<form method="POST" style='margin: 0 auto 20px auto;'>
 			<input type='text' class='edit_info_input' name='edit_info_input' placeholder='Введите новый никнейм...'>
-			<button type='submit' name='edit_info_name_btn' class='account_info_btn' name='edit_name'>Готово</button>
+			<button type='submit' name='edit_info_username_btn' class='account_info_btn' name='edit_name'>Готово</button>
 			</form>
 			_END;
 }
+if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['site']) && $_GET['site'] === "city") {
+	echo <<<_END
+			<h3 style='text-align: center'>Изменить город</h3>
+			<form method="POST" style='margin: 0 auto 20px auto;'>
+						<select id="city-select" class="vk-button-btn" style="max-width: 120px; padding: 1px; font-size: 10px" name="edit_info_input">
+						<option value="Москва">Москва</option>
+						<option value="Санкт-Петербург">Санкт-Петербург</option>
+						<option value="Новосибирск">Новосибирск</option>
+						<option value="Екатеринбург">Екатеринбург</option>
+						<option value="Казань">Казань</option>
+						<option value="Нижний Новгород">Нижний Новгород</option>
+						<option value="Челябинск">Челябинск</option>
+						<option value="Самара">Самара</option>
+						<option value="Омск">Омск</option>
+						<option value="Ростов-на-Дону">Ростов-на-Дону</option>
+						<option value="Уфа">Уфа</option>
+						<option value="Красноярск">Красноярск</option>
+						<option value="Воронеж">Воронеж</option>
+						<option value="Пермь">Пермь</option>
+						<option value="Волгоград">Волгоград</option>
+						<option value="Краснодар">Краснодар</option>
+						<option value="Саратов">Саратов</option>
+						<option value="Тюмень">Тюмень</option>
+						<option value="Тольятти">Тольятти</option>
+						<option value="Ижевск">Ижевск</option>
+						<option value="Махачкала">Махачкала</option>
+						<option value="Хабаровск">Хабаровск</option>
+						<option value="Владивосток">Владивосток</option>
+						<option value="Другой" selected>Другой город</option>
+					</select>
+			<button type='submit' name='edit_info_city_btn' class='account_info_btn' name='edit_name'>Готово</button>
+			</form>
+			_END;
+}
+if ($_SERVER['REQUEST_METHOD'] === "GET"  && isset($_GET['site']) && $_GET['site'] === 'bue') {
+	echo "<h3 style='text-align: center'>Готово</h3><p style=\"text-align: center;\"><a href=\"\">Перейти к настройкам</a> <br> <a href=\"\">Перейти на главную страницу</a></p>";
+}
 
+
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_city_btn']) && !empty($_POST['edit_info_input'])) {
+
+	$stmt = $pdo->prepare('UPDATE users_info SET city = :city WHERE id = :id');
+	$stmt->execute([
+		':city' => trim($_POST['edit_info_input']),
+		':id' => $_SESSION['id']
+	]);
+	header('Location: edit_info.php?site=bue');	
+	exit();
+}
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_name_btn']) && !empty($_POST['edit_info_input'])) {
 
 	$stmt = $pdo->prepare('UPDATE users SET name = :name WHERE id = :id');
@@ -112,7 +172,26 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_name_btn'])
 		':name' => trim($_POST['edit_info_input']),
 		':id' => $_SESSION['id']
 	]);
-	
+		header('Location: edit_info.php?site=bue');	
+	exit();
+
+}
+
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_username_btn']) && !empty($_POST['edit_info_input'])) {
+	$username = trim($_POST['edit_info_input']);
+	if (!preg_match('/^[A-Za-z0-9_]+$/', $username)) {
+		echo "<b style='text-align: center'>Логин может содержать только латиницу, цифры и _<br><a href='edit_info.php?site=username'>Попробовать еще раз</a></b>";
+		exit();
+	} else {
+
+	$stmt = $pdo->prepare('UPDATE users SET username = :username WHERE id = :id');
+	$stmt->execute([
+		':username' => trim($_POST['edit_info_input']),
+		':id' => $_SESSION['id']
+	]);
+		header('Location: edit_info.php?site=bue');	
+	exit();
+	}
 	}
 
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_age_btn']) && !empty($_POST['edit_info_input'])) {
@@ -121,8 +200,21 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_age_btn']) 
 		':age' => $_POST['edit_info_input'],
 		':id' => $_SESSION['id']
 	]);
+	header('Location: edit_info.php?site=bue');	
+	exit();
+
 }
 
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_about_btn']) && !empty($_POST['edit_info_input'])) {
+	$stmt = $pdo->prepare("UPDATE users_info SET about = :about WHERE id = :id");
+	$stmt->execute([
+		':about' => $_POST['edit_info_input'],
+		':id' => $_SESSION['id']
+	]);
+	header('Location: edit_info.php?site=bue');	
+	exit();
+
+}
 ?>
 </div>
 </div>

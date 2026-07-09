@@ -24,40 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])
 	exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['age_btn'])) {
-    $age = (int)$_POST['age'];
-    if ($age > 0 && $age < 150) {
-        $stmt = $pdo->prepare("UPDATE users_info SET age = :age WHERE id = :id");
-        $stmt->execute([
-            ':age' => $age,
-            ':id' => $_SESSION['id']
-        ]);
-    }
-    header("Location: profile.php?id=" . $_SESSION['id']);
-    exit();
-}
-if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['city_btn'])) {
-	echo codetext('Отладка', "полковнику никто не пишет"); 
-	echo $_POST['city'];
-	$stmt = $pdo->prepare("UPDATE users_info SET city = :city WHERE id = :id");
-	$stmt->execute([
-		':city' => $_POST['city'],
-		':id' => $_SESSION['id']
-	]);
-	header('Location: profile.php?id='.$_SESSION['id']);
-	exit();
-}
-
-if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['about_btn'])) {
-	$sql = "UPDATE users_info SET about = :about WHERE id = :id";
-	$stmt = $pdo->prepare($sql);
-	$stmt->execute([
-		':about' => $_POST['about'],
-		':id' => $_SESSION['id']
-	]);
-	header("Location: profile.php?id=".$_SESSION['id']);
-	exit();
-}
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 	$sql = "SELECT * FROM users WHERE id = :id";
 	$stmt = $pdo->prepare($sql);
@@ -155,14 +121,7 @@ if (isset($profile_info['age'])) {
 }
 ?>
 </span>
-    <?php if ($edit_profile) { ?>
-        <form method="POST" style="display: inline;">
-            <input type="number" name="age" placeholder="Возраст" 
-                   value="<?php echo htmlspecialchars($profile_info['age'] ?? ''); ?>" 
-                   min="1" max="120" style="width: 60px;">
-            <button type="submit" name="age_btn" style='height: 20px; padding: 1px; font-size: 10px;' class="vk-button-btn">Сохранить</button>
-        </form>
-    <?php } ?></li>
+    </li>
 							<li>
 								<label for="city-select">Город: <?php 
 if (isset($profile_info['city'])) {
@@ -171,54 +130,17 @@ else {
 echo "Не выбрано";
 }
 ?></label>
-								<?php
-								if ($edit_profile) {
-								echo <<<_END
-								<form method="POST">
-								<select id="city-select" class="vk-button-btn" style="max-width: 120px; padding: 1px; font-size: 10px" name="city">
-								<option value="Москва">Москва</option>
-								<option value="Санкт-Петербург">Санкт-Петербург</option>
-								<option value="Новосибирск">Новосибирск</option>
-								<option value="Екатеринбург">Екатеринбург</option>
-								<option value="Казань">Казань</option>
-								<option value="Нижний Новгород">Нижний Новгород</option>
-								<option value="Челябинск">Челябинск</option>
-								<option value="Самара">Самара</option>
-								<option value="Омск">Омск</option>
-								<option value="Ростов-на-Дону">Ростов-на-Дону</option>
-								<option value="Уфа">Уфа</option>
-								<option value="Красноярск">Красноярск</option>
-								<option value="Воронеж">Воронеж</option>
-								<option value="Пермь">Пермь</option>
-								<option value="Волгоград">Волгоград</option>
-								<option value="Краснодар">Краснодар</option>
-								<option value="Саратов">Саратов</option>
-								<option value="Тюмень">Тюмень</option>
-								<option value="Тольятти">Тольятти</option>
-								<option value="Ижевск">Ижевск</option>
-								<option value="Махачкала">Махачкала</option>
-								<option value="Хабаровск">Хабаровск</option>
-								<option value="Владивосток">Владивосток</option>
-								<option value="Другой" selected>Другой город</option>
-								</select>
-							<button type="submit" name="city_btn" class="vk-button-btn" style="padding: 0 10px">Готово</button>
-							</form>
-							_END;
-								}
-							?>
 							</li>
 <li>    <form method="POST">
 	<label>О себе: </label>
 	    <span><?php 
 	$about = $profile_info['about'] ?? 'Ничего нет';
 echo nl2br(htmlspecialchars(wordwrap($about, 30, "\n", true)));	?>
-<?php if ($edit_profile) { ?>
-            <textarea name="about" placeholder="Напишите о себе..."></textarea><br>
-            <button type="submit" name="about_btn" class="vk-button-btn">Сохранить</button>
-	<?php } ?>    
 </form>
 </li>
-							</li>
+<li style='all: unset;'>
+<a href='account.php' style='display: inline-block; margin: 0;'>Изменить</a>
+</li>
 						</ul>
 					</div>
 					<div class="profile-post-container">
