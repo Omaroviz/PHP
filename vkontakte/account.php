@@ -1,6 +1,7 @@
 <?php
 
 include_once 'login.php';
+include_once 'user.php';
 
 session_start();
 
@@ -119,18 +120,12 @@ if (isset($_GET['site']) && $_GET['site'] === "main") {
 }
 
 if (isset($_GET['site']) && $_GET['site'] === "info") {
+	$user = new User($_SESSION['id'], $pdo);
 	$name = htmlspecialchars($_SESSION['name']);
-	$stmt = $pdo->prepare("SELECT i.id, i.city, i.about, i.age 
-FROM users u 
-JOIN users_info i ON u.id = i.id 
-WHERE u.id = :id");
-	$stmt->execute([':id' => $_SESSION['id']]);
-	$user_info = $stmt->fetch();
-	$user_age = $user_info['age'];
-	$user_about = $user_info['about'];
-	$user_city = $user_info['city'];
-	$username = htmlspecialchars($_SESSION['username']);
-	$age = htmlspecialchars($_SESSION['name']);
+	$user_age = htmlspecialchars($user->age);
+	$user_about = htmlspecialchars($user->about);
+	$user_city = htmlspecialchars($user->city);
+	$username = htmlspecialchars($user->username);
 	echo <<<_END
 		<h3 style='text-align: center'>Личная информация</h3>
 		<div class='account_info_info'>
