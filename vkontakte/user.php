@@ -79,6 +79,11 @@ class Post {
 		$this->post_from = $post['post_from'];
 	
 	}
+
+	public function delete($pdo) {
+		$stmt = $pdo->prepare("DELETE FROM posts WHERE id = :id");
+		$stmt->execute([':id' => $this->id]);
+	}
 }
 
 // Вход: $user->login("Kolbasenko" ,"kolbasa"); 

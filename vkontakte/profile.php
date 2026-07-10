@@ -9,6 +9,10 @@ if (!isset($_SESSION['username'])) {
 	header('Location: sign.php');
 	exit();
 }
+if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
+	$post = new Post(['id' => $_GET['delete_id']]);
+	$post->delete($pdo);
+}
 
 $user = new User($_SESSION['id'], $pdo);
 if (isset($_GET['id']) && $_GET['id'] != $_SESSION['id']) {
@@ -17,7 +21,10 @@ if (isset($_GET['id']) && $_GET['id'] != $_SESSION['id']) {
     $viewUser = $user;
 }
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])
-	&& !empty($_POST['title']) && !empty($_POST['text'])) {
+	&& !empty($_POST['title']) || !empty($_POST['text'])) {
+	
+    $post_from = isset($_GET['id']) ? $_GET['id'] : $_SESSION['id'];
+
 	$sql = "INSERT INTO posts(title, text, author, author_id, post_from) VALUES(:title, :text, :author, :author_id, :post_from)";
 	$stmt = $pdo->prepare($sql);
 	$stmt->execute([
@@ -25,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])
 		":text" => $_POST['text'],
 		":author" => $_SESSION['username'],
 		":author_id" => $_SESSION['id'],
-		":post_from" => $_GET['id']
+		":post_from" => $post_from
 	]);
 	header("Location: ".$_SERVER['REQUEST_URI']);
 	exit();
@@ -67,7 +74,6 @@ if ($user->id === $_SESSION['id']) {
 } else {
 	$edit_profile = 0;
 }
-
 ?>
 
 
@@ -198,7 +204,6 @@ echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($pos
 	}
 	}
 	echo "</div>";
-
 }
 
 
