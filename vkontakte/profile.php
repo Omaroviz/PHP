@@ -168,26 +168,42 @@ _END;
 								<!-- <input type="text" id="postCommand" placeholder="Команда" class="createPostCommand"> -->
 								<button type="submit" name="add_post" class="createPostButton">Опубликовать</button>
 							</form>
-						</div>
-						<?php
-							$sql = "SELECT * FROM posts WHERE post_from = :id ORDER BY id DESC";
-							$stmt = $pdo->prepare($sql);
-							$stmt->execute([':id' => $_GET['id']]);
-							$post = $stmt->fetchAll();
-?>
-<?php if (count($post) > 0): ?>
-    <?php foreach ($post as $info): ?>
-        <div class="post">
-            <h3><?php echo htmlspecialchars($info['title']); ?></h3>
-            <p><?php echo nl2br(htmlspecialchars($info['text'])); ?></p>
-            <small><?php echo htmlspecialchars($info['author']); ?></small>
-        </div>
-    <?php endforeach; ?>
-<?php else: ?>
+							</div>
+<?php
+
+echo <<<_END
+_END;
+$stmt = $pdo->prepare("SELECT * FROM posts WHERE post_from = :id ORDER BY id DESC");
+$stmt->execute([':id' => $_GET['id']]);
+$posts = $stmt->fetchAll();
+foreach ($posts as $poster) {
+	$post = new Post($poster);
+		echo <<<_END
     <div class="post">
-        <p>Нет постов</p>
-    </div>
-<?php endif; ?>				</div>
+	<h3 style="margin: 0;">
+_END;
+        echo htmlspecialchars($post->title);
+        echo <<<_END
+</h3>
+_END;
+echo htmlspecialchars($post->text);
+if (is_numeric($post->post_from)) {
+echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>";
+} else {
+	echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>"; 
+}
+	if (isset($_SESSION['username'])) {
+	if ($_SESSION['username'] === $post->author || $_SESSION['username'] == "admin"){
+	echo '</p><a class="vk-button" href="?delete_id='.$post->id.'">Удалить</a>';
+	}
+	}
+	echo "</div>";
+
+}
+
+
+
+?>
 			</div>
 		</div>
 	</div>
