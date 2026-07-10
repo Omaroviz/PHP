@@ -34,6 +34,17 @@ class User {
 		$this->age = $users_info['age'] ?? "Не выбрано";
 		}
 	}
+	
+	public function edit($table, $column, $text, $pdo) {
+		$stmt = $pdo->prepare("UPDATE $table SET $column = :text WHERE id = :id");
+		$stmt->execute([
+			':text' => $text,
+			':id' => $this->id,
+		]);
+
+		//$user->edit("users_info", "age", 21, $pdo);	
+
+	}
 
 	public function logout() {
 		$_SESSION['id'] = null;

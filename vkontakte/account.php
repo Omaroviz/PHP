@@ -136,7 +136,6 @@ if (isset($_GET['site']) && $_GET['site'] === "info") {
 		<p class='account_info_p'>О себе: {$user_about} <a  href='edit_info.php?site=about' class='account_info_btn'>Изменить</a></p>
 		</div>
 _END;
-	
 }
 ?>
 </div>

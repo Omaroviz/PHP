@@ -1,6 +1,7 @@
 <?php
 
 include_once 'login.php';
+include_once 'user.php';
 
 session_start();
 if (!isset($_SESSION['id'])){
@@ -173,24 +174,23 @@ if ($_SERVER['REQUEST_METHOD'] === "GET"  && isset($_GET['site']) && $_GET['site
 }
 
 
-if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_city_btn']) && !empty($_POST['edit_info_input'])) {
+$user = new User($_SESSION['id'], $pdo);
 
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_city_btn']) && !empty($_POST['edit_info_input'])) {
+	/*
 	$stmt = $pdo->prepare('UPDATE users_info SET city = :city WHERE id = :id');
 	$stmt->execute([
 		':city' => trim($_POST['edit_info_input']),
 		':id' => $_SESSION['id']
 	]);
+	 */
+	$user->edit('users_info', 'city', $_POST['edit_info_input'], $pdo);
 	header('Location: edit_info.php?site=bue');	
 	exit();
 }
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_name_btn']) && !empty($_POST['edit_info_input'])) {
-
-	$stmt = $pdo->prepare('UPDATE users SET name = :name WHERE id = :id');
-	$stmt->execute([
-		':name' => trim($_POST['edit_info_input']),
-		':id' => $_SESSION['id']
-	]);
-		header('Location: edit_info.php?site=bue');	
+	$user->edit('users', 'name', $_POST['edit_info_input'], $pdo);
+	header('Location: edit_info.php?site=bue');	
 	exit();
 
 }
@@ -212,12 +212,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_username_bt
 		echo "<b class='edit_info_error'>Длина никнейма должна быть больше 5 символов!<br><a href='edit_info?site=username'>Попробывать еще раз</b>";
 		exit();
 	}
-	$stmt = $pdo->prepare('UPDATE users SET username = :username WHERE id = :id');
-	$stmt->execute([
-		':username' => trim($_POST['edit_info_input']),
-		':id' => $_SESSION['id']
-	]);
-		header('Location: edit_info.php?site=bue');	
+
+
+	$user->edit('users', 'username', $_POST['edit_info_input'], $pdo);
+	header('Location: edit_info.php?site=bue');	
 	exit();
 	}
 	}
@@ -228,17 +226,14 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_age_btn']) 
 		':age' => $_POST['edit_info_input'],
 		':id' => $_SESSION['id']
 	]);
+	$user->edit('users_info', 'age', $_POST['edit_info_input'], $pdo);
 	header('Location: edit_info.php?site=bue');	
 	exit();
 
 }
 
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_about_btn']) && !empty($_POST['edit_info_input'])) {
-	$stmt = $pdo->prepare("UPDATE users_info SET about = :about WHERE id = :id");
-	$stmt->execute([
-		':about' => $_POST['edit_info_input'],
-		':id' => $_SESSION['id']
-	]);
+	$user->edit('users_info', 'about', $_POST['edit_info_input'], $pdo);
 	header('Location: edit_info.php?site=bue');	
 	exit();
 
