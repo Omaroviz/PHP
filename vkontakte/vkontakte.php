@@ -1,6 +1,7 @@
 <?php
 
 include_once 'login.php';
+include_once 'user.php';
 session_start();
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
 	$stmt = $pdo->prepare("SELECT * FROM posts WHERE id = :id");
@@ -111,31 +112,27 @@ if (isset($_SESSION['name'])) {
 
 echo <<<_END
 _END;
-$stmt = $pdo->query("SELECT * FROM posts ORDER BY id DESC");
+$stmt = $pdo->query("SELECT posts.*, users.username FROM posts LEFT JOIN users ON posts.post_from = users.id ORDER BY posts.id DESC");
 $posts = $stmt->fetchAll();
-foreach ($posts as $post) {
+foreach ($posts as $poster) {
+	$post = new Post($poster);
 		echo <<<_END
     <div class="post">
 	<h3 style="margin: 0;">
 _END;
-        echo htmlspecialchars($post['title']);
+        echo htmlspecialchars($post->title);
         echo <<<_END
 </h3>
 _END;
-echo htmlspecialchars($post['text']);
-if (is_numeric($post['post_from'])) {
-$sql = "SELECT username FROM users WHERE id = :post_from";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([':post_from' => $post['post_from']]);
-//var_dump($stmt->fetch());
-$post_by = $stmt->fetch();
-echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post['date'])." | ".htmlspecialchars($post['author'])." |       На стене @".$post_by['username']."</small>";
+echo htmlspecialchars($post->text);
+if (is_numeric($post->post_from)) {
+echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)." |       На стене @".$poster['username']."</small>";
 } else {
-	echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post['date'])." | ".htmlspecialchars($post['author'])."</small>"; 
+	echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>"; 
 }
 	if (isset($_SESSION['username'])) {
-	if ($_SESSION['username'] === $post['author'] || $_SESSION['username'] == "admin"){
-	echo '</p><a class="vk-button" href="?delete_id='.$post['id'].'">Удалить</a>';
+	if ($_SESSION['username'] === $post->author || $_SESSION['username'] == "admin"){
+	echo '</p><a class="vk-button" href="?delete_id='.$post->id.'">Удалить</a>';
 	}
 	}
 	echo "</div>";

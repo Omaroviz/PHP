@@ -1,6 +1,7 @@
 <?php
 
 include_once 'login.php';
+include_once 'user.php';
 
 session_start();
 
@@ -9,6 +10,12 @@ if (!isset($_SESSION['username'])) {
 	exit();
 }
 
+$user = new User($_SESSION['id'], $pdo);
+if (isset($_GET['id']) && $_GET['id'] != $_SESSION['id']) {
+    $user = new User($_GET['id'], $pdo);
+} else {
+    $viewUser = $user;
+}
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])
 	&& !empty($_POST['title']) && !empty($_POST['text'])) {
 	$sql = "INSERT INTO posts(title, text, author, author_id, post_from) VALUES(:title, :text, :author, :author_id, :post_from)";
@@ -23,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])
 	header("Location: ".$_SERVER['REQUEST_URI']);
 	exit();
 }
-
+/*
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 	$sql = "SELECT * FROM users WHERE id = :id";
 	$stmt = $pdo->prepare($sql);
@@ -48,7 +55,18 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 	exit();
 }
 
+ */
 
+if (!$_GET['id']) {
+	header("Location: profile.php?id=".$_SESSION['id']);
+	exit();
+}
+
+if ($user->id === $_SESSION['id']) {
+	$edit_profile = 1;
+} else {
+	$edit_profile = 0;
+}
 
 ?>
 
@@ -108,33 +126,25 @@ if (isset($_SESSION['id'])) {
 				<div class="page-layout">
 					<div class="profile-info">
 						<img src="media/Pavel_Durov_logo.jpg" alt="Фото профиля" class="profile-logo">
-						<h1 class="profileName"><span><?php echo htmlspecialchars($profile['name']);?></span></h1>
+						<h1 class="profileName"><span><?php echo htmlspecialchars($user->name);?></span></h1>
 						<h3>Личная информация:</h3>
 						<ul>
-						<li>Никнейм: @<span id="profile-info-userName"><?php echo htmlspecialchars($profile['username'])?></span></li>
+						<li>Никнейм: @<span id="profile-info-userName"><?php echo htmlspecialchars($user->username)?></span></li>
 							<li>Возраст: <span id="profile-info-age">
 <?php
-if (isset($profile_info['age'])) {
-	echo htmlspecialchars($profile_info['age']);
-} else {
-	echo "Не выбрано";
-}
+	echo htmlspecialchars($user->age);
 ?>
 </span>
     </li>
 							<li>
 								<label for="city-select">Город: <?php 
-if (isset($profile_info['city'])) {
-	echo htmlspecialchars($profile_info['city']);}
-else {
-echo "Не выбрано";
-}
+echo htmlspecialchars($user->city);
 ?></label>
 							</li>
 <li>    <form method="POST">
 	<label>О себе: </label>
 	    <span><?php 
-	$about = $profile_info['about'] ?? 'Ничего нет';
+	$about = $user->about;
 echo nl2br(htmlspecialchars(wordwrap($about, 30, "\n", true)));	?>
 </form>
 </li>

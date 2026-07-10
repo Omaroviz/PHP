@@ -1,39 +1,25 @@
 <?php include_once 'login.php'; session_start(); 
+include_once 'user.php';
 
 if ($_SERVER['REQUEST_METHOD'] === "POST" &&
 	isset($_POST['sign_btn']) &&
 	!empty($_POST['username']) &&
 	!empty($_POST['password'])) {
-	// echo "POST дошел!";
-	// Из соображений безопасности:
-	$sql = "SELECT * FROM users WHERE username = :username";
-	$stmt = $pdo->prepare($sql);
-	$stmt->execute([":username" => $_POST['username']]);
-	$user = $stmt->fetch();
-	// echo "<br><code>// Отладка: ";var_dump($user);echo "</code><br>";
-	// Пока не будет добавлен файл registration.php, расхеширование паролей не будет!
-	if (password_verify($_POST['password'], $user['password'])) {
-		$_SESSION['name'] = $user['name'];
-		$_SESSION['username'] = $user['username'];
-		$_SESSION['id'] = $user['id'];
-		$stmt = $pdo->prepare('SELECT id FROM users_info WHERE id = :id');
-		$stmt->execute([':id' => $_SESSION['id']]);
-		$user = $stmt->fetch();
-		if (!$user) {
-			$stmt = $pdo->prepare("INSERT INTO users_info(id) VALUES(:id)");
-			$stmt->execute([':id' => $_SESSION['id']]);
+	$user = new User(null, $pdo);
+
+	if ($user->login($_POST['username'], $_POST['password'])) {
+			header('Location: vkontakte.php');
+			exit();
+		} else {
+			$error = "Неверный пароль";
 		}
-
-		header("Location: vkontakte.php");
-		exit();
-
 	} else {
-	 	echo "Неверный логин/пароль";
+	 	//echo "Неверный логин/пароль";
 	}
 
 	//header("location: " . $_server['php_self']);
 	//exit();
-}
+
 
 ?>
 
@@ -69,6 +55,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" &&
 <main>
 	<div class="login-content">
 		<p class="login-main-text">Добро пожаловать!</p>
+		<?php
+		if (isset($error)) {
+			echo "<b>".$error."</b>";
+		}
+		?>	
 		<form method="POST">
 		<div>
 			<span class="input-text">Логин:</span>
