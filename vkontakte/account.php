@@ -75,9 +75,9 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['site'])) {
 <h3 style='text-align: center;'>Изменить пароль</h2>
 <form method='POST' style='align-items: center;'>
 
-<input type='text' name='old_password' placeholder='Старый пароль' required><br>
-<input type='text' name='new_password' placeholder='Новый пароль' required><br>
-<input type='text' name='new2_password' placeholder='Повторите пароль' required><br>
+<input type='password' name='old_password' placeholder='Старый пароль' required><br>
+<input type='password' name='new_password' placeholder='Новый пароль' required><br>
+<input type='password' name='new2_password' placeholder='Повторите пароль' required><br>
 <button type='submit' name='edit_password_btn'>Готово</button>
 </form>
 </div>
@@ -94,18 +94,11 @@ if (
 ) {
 	if ($_POST['new2_password'] === $_POST['new_password']) {
 	
-		$stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
-		$stmt->execute([':id' => $_SESSION['id']]);
-		$user_password = $stmt->fetch();
-		echo "Отладка: ";var_dump($user_password);echo "<br>";
-		if (password_verify($_POST['old_password'], $user_password['password'])) {
+		$user = new User($_SESSION['id'], $pdo);
+		if (password_verify($_POST['old_password'], $user->password)) {
 			echo "Молодец, малыш!<br>";
-			$stmt = $pdo->prepare("UPDATE users SET password = :password WHERE id = :id");
 			$hashed = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
-			$stmt->execute([
-				':password' => $hashed,
-				':id' => $user_password['id']
-			]);
+			$user->edit("users", "password", $hashed, $pdo);
 		} else {
 			echo "Неверный старый пароль";
 		}	

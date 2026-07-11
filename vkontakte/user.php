@@ -18,7 +18,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 class User {
-	public $id, $username, $name, $city, $about, $age;
+	public $id, $username, $password, $name, $city, $about, $age;
 	private $db;
 	public function __construct($id, $pdo) {
 		$this->db = $pdo;
@@ -29,6 +29,7 @@ class User {
 		if ($users_info) {
 		$this->name = $users_info['name'];
 		$this->username = $users_info['username'];
+		$this->password = $users_info['password'];
 		$this->city = $users_info['city'] ?? "Не выбрано";
 		$this->about = $users_info['about'] ?? "Не выбрано";
 		$this->age = $users_info['age'] ?? "Не выбрано";
@@ -43,7 +44,19 @@ class User {
 		]);
 
 		//$user->edit("users_info", "age", 21, $pdo);	
-
+	    if ($table === 'users' && $column === 'name') {
+        $this->name = $text;
+        $_SESSION['name'] = $text;
+    } elseif ($table === 'users' && $column === 'username') {
+        $this->username = $text;
+        $_SESSION['username'] = $text;
+    } elseif ($table === 'users_info' && $column === 'city') {
+        $this->city = $text;
+    } elseif ($table === 'users_info' && $column === 'age') {
+        $this->age = $text;
+    } elseif ($table === 'users_info' && $column === 'about') {
+        $this->about = $text;
+    }
 	}
 
 	public function logout() {

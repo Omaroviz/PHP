@@ -221,11 +221,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_username_bt
 	}
 
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['edit_info_age_btn']) && !empty($_POST['edit_info_input'])) {
-	$stmt = $pdo->prepare('UPDATE users_info SET age = :age WHERE id = :id');
-	$stmt->execute([
-		':age' => $_POST['edit_info_input'],
-		':id' => $_SESSION['id']
-	]);
 	$user->edit('users_info', 'age', $_POST['edit_info_input'], $pdo);
 	header('Location: edit_info.php?site=bue');	
 	exit();
