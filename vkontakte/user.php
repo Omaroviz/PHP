@@ -105,8 +105,26 @@ class Post {
 	}
 
 	public function delete($pdo) {
-		$stmt = $pdo->prepare("DELETE FROM posts WHERE id = :id");
+		$stmt = $pdo->prepare("delete from posts where id = :id");
 		$stmt->execute([':id' => $this->id]);
+	}
+}
+
+class Search {
+	public $text, $posts, $users;
+
+	public function __construct($text, $pdo) {
+		$text = "%".$text."%";
+		$stmt = $pdo->prepare("
+SELECT id, username, name
+FROM users
+WHERE username LIKE :text
+OR name LIKE :text");
+		$stmt->execute([':text' => $text]);
+		$this->users = $stmt->fetchAll();
+		$stmt = $pdo->prepare("SELECT * FROM posts WHERE title LIKE :text OR text LIKE :text");
+		$stmt->execute([':text' => $text]);
+		$this->posts = $stmt->fetchAll();
 	}
 }
 
