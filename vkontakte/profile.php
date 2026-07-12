@@ -9,9 +9,16 @@ if (!isset($_SESSION['username'])) {
 	header('Location: sign.php');
 	exit();
 }
-if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
-	$post = new Post(['id' => $_GET['delete_id']]);
-	$post->delete($pdo);
+
+$author_wall = $_GET['id'];
+
+if ($_SERVER['REQUEST_METHOD'] == "GET" && isset($_GET['delete_id'])) {
+	$post = new Post($_GET['delete_id'], $pdo);
+	if ($_SESSION['id'] == $post->author_id || $_SESSION['username'] == "admin" || $_SESSION['id'] == $author_wall) {
+		$post->delete($pdo);
+		header('Location: '.$_SERVER['PHP_SELF']);
+		exit();
+	} else {$error = "Вы не можете удалить этот пост!";}
 }
 
 $user = new User($_SESSION['id'], $pdo);
@@ -176,37 +183,38 @@ _END;
 							</form>
 							</div>
 <?php
-
+if (isset($error)) {
+$error = htmlspecialchars($error);
 echo <<<_END
+	
+	<div class='post'>
+		<h3 style="margin: 0;">Ошибка</h3>
+		{$error}
+		<a href='vkontakte.php'>Перезагрузка</a>
+	</div>
 _END;
+}
 $stmt = $pdo->prepare("SELECT * FROM posts WHERE post_from = :id ORDER BY id DESC");
 $stmt->execute([':id' => $_GET['id']]);
 $posts = $stmt->fetchAll();
 foreach ($posts as $poster) {
 	$post = new Post($poster);
+	$title = htmlspecialchars($post->title);
+	$text = htmlspecialchars($post->text);
 		echo <<<_END
     <div class="post">
-	<h3 style="margin: 0;">
+	<h3 style="margin: 0;">{$title}</h3>
+	{$text}
 _END;
-        echo htmlspecialchars($post->title);
-        echo <<<_END
-</h3>
-_END;
-echo htmlspecialchars($post->text);
-if (is_numeric($post->post_from)) {
 echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>";
-} else {
-	echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>"; 
-}
 	if (isset($_SESSION['username'])) {
-	if ($_SESSION['username'] === $post->author || $_SESSION['username'] == "admin"){
-	echo '</p><a class="vk-button" href="?delete_id='.$post->id.'">Удалить</a>';
+	if ($_SESSION['username'] === $post->author || $_SESSION['username'] == "admin" || $_SESSION['id'] == $_GET['id']){
+	echo '</p><a href="?id='.urlencode($_GET['id']).'&delete_id='.urlencode($post->id).'" class="vk-button">Удалить</a></a>';
 	}
 	}
 	echo "</div>";
+
 }
-
-
 
 ?>
 			</div>
@@ -217,7 +225,6 @@ echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($pos
 </body>
 
 </html>
-
 
 
 

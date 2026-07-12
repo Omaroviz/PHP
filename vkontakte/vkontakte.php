@@ -99,8 +99,8 @@ if (isset($_SESSION['name'])) {
 		<div class="post">
 			<form method="POST" action="new_post.php">
 			<p class="postmain">Новая запись</p>
-			<textarea name="title" id="postName" placeholder="Заголовок" class="createPostName"></textarea>
-			<textarea name="text" id="postInput" placeholder="Что у вас нового?" class="createPostText"></textarea>
+			<textarea name="title" id="postName" placeholder="Заголовок" class="createPostName" style='resize: none'></textarea>
+			<textarea name="text" id="postInput" placeholder="Что у вас нового?" class="createPostText" style='resize: none'></textarea>
 			<!-- <input type="text" id="postCommand" placeholder="Команда" class="createPostCommand"> -->
 			<button type="submit" name="add_post" class="createPostButton">Опубликовать</button>
 			</form>
@@ -125,23 +125,21 @@ $stmt = $pdo->query("SELECT posts.*, users.username FROM posts LEFT JOIN users O
 $posts = $stmt->fetchAll();
 foreach ($posts as $poster) {
 	$post = new Post($poster);
+	$title = htmlspecialchars($post->title);
+	$text = htmlspecialchars($post->text);
 		echo <<<_END
     <div class="post">
-	<h3 style="margin: 0;">
+	<h3 style="margin: 0;">{$title}</h3>
+	{$text}
 _END;
-        echo htmlspecialchars($post->title);
-        echo <<<_END
-</h3>
-_END;
-echo htmlspecialchars($post->text);
 if (is_numeric($post->post_from)) {
-echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)." |       На стене @".$poster['username']."</small>";
+echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)." | На стене @".htmlspecialchars($poster['username'])."</small>";
 } else {
 	echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>"; 
 }
 	if (isset($_SESSION['username'])) {
 	if ($_SESSION['username'] === $post->author || $_SESSION['username'] == "admin"){
-	echo '</p><a class="vk-button" href="?delete_id='.$post->id.'">Удалить</a>';
+	echo '</p><a class="vk-button" href="?delete_id='.htmlspecialchars($post->id).'">Удалить</a>';
 	}
 	}
 	echo "</div>";
@@ -156,8 +154,8 @@ echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($pos
 </main>
 <footer id="vniz" style="margin: 0;">
 	<a href="#" class="vk-button" onclick="confirm('Fork me? Fork you! @octocat')">О сайте</a>
-	"Вконтакте Druza" ООО. Все права защищены. Распространения кода сайта разрешено с <a href="#">условиями
-	конфидициальности</a> на сайте GitHub.
+© 2026 Вконтакте Druza. Исходный код распространяется под лицензией 
+<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener noreferrer">GNU General Public License v3</a>.
 </footer>
 
 </body>
