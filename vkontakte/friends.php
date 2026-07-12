@@ -1,18 +1,14 @@
 <?php
 
 include_once 'login.php';
+include_once 'user.php';
 
 session_start();
 
 $stmt = $pdo->query('SELECT * FROM users ORDER BY id DESC');
 $users = $stmt->fetchAll();
 
-function user_info($id) {
-global $pdo;
-$stmt = $pdo->prepare('SELECT * FROM users_info WHERE id = :id');
-$stmt->execute([':id' => $id]);
-return $stmt->fetch();
-}
+$user = new User($_SESSION['id'], $pdo);
 ?>
 
 	<!DOCTYPE html>
@@ -61,7 +57,7 @@ return $stmt->fetch();
 						<span id="friends-userName-friends-mini" class="sidebar-userName">
 						<b><?php 
 						if (isset($_SESSION['id'])) {
-							echo $_SESSION['name'];
+							echo $user->name;
 						} else {
 							echo "Guest";}
 						?>
@@ -72,7 +68,7 @@ return $stmt->fetch();
 					<?php
 						//var_dump($_SESSION);
 						if (isset($_SESSION['id'])) {
-							echo htmlspecialchars(user_info($_SESSION['id'])['about']);
+							echo htmlspecialchars($user->about);
 						}
 					?>
 		</aside>
@@ -80,27 +76,24 @@ return $stmt->fetch();
 		<div class="main-content">
 		<h1>Все люди</h1>
 <?php
-foreach ($users as $user) {
-
-	$stmt = $pdo->prepare("SELECT * FROM users_info WHERE id = :id");
-	$stmt->execute([':id' => $user['id']]);
-	$user_info = $stmt->fetch();
+foreach ($users as $user_info) {
+	$user = new User($user_info['id'], $pdo);
 
 echo <<<_END
 			<article class="friends-window">
 				<div class="friends-mini">
-					<span class="friends-mini-logo">DO</span>
+					<span class="friends-mini-logo">MH</span>
 _END;
-					echo htmlspecialchars($user['name']);
+					echo htmlspecialchars($user->name);
 echo <<<_END
 					<div class="friends-mini-buttons">
-						<a href="profile.php?id={$user['id']}" class="friends-button">Профиль</a>
+						<a href="profile.php?id={$user->id}" class="friends-button">Профиль</a>
 						<a href="#" class="friends-button">Написать</a>
 					</div>
 				</div><p style='margin: 8px 0 5px 0'>
 				_END;
-if (isset($user_info['about'])) {
-	echo htmlspecialchars($user_info['about']);
+if (isset($user->about) && $user->about !== 'Не выбрано') {
+	echo htmlspecialchars($user->about);
 }
 echo <<<_END
 			</p></article>
