@@ -93,21 +93,45 @@ class Post {
 	public $author_id;
 	public $post_from;
     	private $db;
-	public function __construct($post) {
-		$this->id = $post['id'];
-		$this->title = $post['title'];
-		$this->text = $post['text'];
-		$this->author = $post['author'];
-		$this->date = $post['date'];
-		$this->author_id = $post['author_id'];
-		$this->post_from = $post['post_from'];
-	
-	}
-
+public function __construct($data, $pdo = null) {
+    if (is_array($data)) {
+        // Если передан массив — берём данные из него
+        $this->id = $data['id'];
+        $this->title = $data['title'];
+        $this->text = $data['text'];
+        $this->author = $data['author'];
+        $this->date = $data['date'];
+        $this->author_id = $data['author_id'];
+        $this->post_from = $data['post_from'];
+    } else {
+        // Если передан ID — загружаем из БД
+        $this->db = $pdo;
+        $stmt = $pdo->prepare("SELECT * FROM posts WHERE id = :id");
+        $stmt->execute([':id' => $data]);
+        $post = $stmt->fetch();
+        if ($post) {
+            $this->id = $post['id'];
+            $this->title = $post['title'];
+            $this->text = $post['text'];
+            $this->author = $post['author'];
+            $this->date = $post['date'];
+            $this->author_id = $post['author_id'];
+            $this->post_from = $post['post_from'];
+        }
+    }
+}
 	public function delete($pdo) {
-		$stmt = $pdo->prepare("delete from posts where id = :id");
+		$stmt = $pdo->prepare("DELETE FROM posts WHERE id = :id");
 		$stmt->execute([':id' => $this->id]);
 	}
+	/*
+	public function like() {
+		$stmt = $pdo->prepare('SELECT like FROM posts WHERE id = :id');
+		$stmt = $stmt->execute([':id' => $this->id]);
+		if ($stmt->fect) {
+			$
+		}
+	 */
 }
 
 class Search {

@@ -4,18 +4,17 @@ include_once 'login.php';
 include_once 'user.php';
 session_start();
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
-	$stmt = $pdo->prepare("SELECT * FROM posts WHERE id = :id");
-	$stmt->execute([":id" => $_GET['delete_id']]);
-	$user = $stmt->fetch();
-	$stmt_info = $pdo->prepare('SELECT * FROM users WHERE username = :username');
-	$stmt_info->execute([":username" => $user['author']]);
-	$user_info = $stmt_info->fetch();
-	if ($_SESSION['username'] == "admin" || $_SESSION['username'] === $user['author']) {
-		$stmt = $pdo->prepare($sql = "DELETE FROM posts WHERE id = :id");	
-		$stmt->execute([':id' => $_GET['delete_id']]);
-	header("Location: https://localhost/vkontakte/vkontakte.php");
-    exit();
-	} else {echo "Вы не можете удалить этот пост!";}
+	$post = new Post($_GET['delete_id'], $pdo);
+	if ($_SESSION['id'] === $post->author_id || $_SESSION['username'] === "admin") {
+		$post->delete($pdo);
+		header('Location: '.$_SERVER['PHP_SELF']);
+		exit();
+	} else {$error = "Вы не можете удалить этот пост!";}
+}
+
+if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['like'])) {
+
+	
 }
 ?>
 
@@ -109,7 +108,17 @@ if (isset($_SESSION['name'])) {
 
 		<!-- Сюда будут падать новые посты -->
 <?php
-
+if (isset($error)) {
+$error = htmlspecialchars($error);
+echo <<<_END
+	
+	<div class='post'>
+		<h3 style="margin: 0;">Ошибка</h3>
+		{$error}
+		<a href='vkontakte.php'>Перезагрузка</a>
+	</div>
+_END;
+}
 echo <<<_END
 _END;
 $stmt = $pdo->query("SELECT posts.*, users.username FROM posts LEFT JOIN users ON posts.post_from = users.id ORDER BY posts.id DESC");

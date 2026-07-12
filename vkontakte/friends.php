@@ -7,8 +7,9 @@ session_start();
 
 $stmt = $pdo->query('SELECT * FROM users ORDER BY id DESC');
 $users = $stmt->fetchAll();
-
-$user = new User($_SESSION['id'], $pdo);
+if (isset($_SESSION['id'])) {
+	$user = new User($_SESSION['id'], $pdo);
+}
 ?>
 
 	<!DOCTYPE html>
