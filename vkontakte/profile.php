@@ -12,13 +12,14 @@ if (!isset($_SESSION['username'])) {
 
 $author_wall = $_GET['id'];
 
+
 if ($_SERVER['REQUEST_METHOD'] == "GET" && isset($_GET['delete_id'])) {
 	$post = new Post($_GET['delete_id'], $pdo);
 	if ($_SESSION['id'] == $post->author_id || $_SESSION['username'] == "admin" || $_SESSION['id'] == $author_wall) {
 		$post->delete($pdo);
 		header('Location: '.$_SERVER['PHP_SELF']);
 		exit();
-	} else {$error = "Вы не можете удалить этот пост!";}
+	} else {$error[] = "Вы не можете удалить этот пост!";}
 }
 
 $user = new User($_SESSION['id'], $pdo);
@@ -35,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])
 	$sql = "INSERT INTO posts(title, text, author, author_id, post_from) VALUES(:title, :text, :author, :author_id, :post_from)";
 	$stmt = $pdo->prepare($sql);
 	$stmt->execute([
-		":title" => $_POST['title'],
-		":text" => $_POST['text'],
+		":title" => trim($_POST['title']),
+		":text" => trim($_POST['text']),
 		":author" => $_SESSION['username'],
 		":author_id" => $_SESSION['id'],
 		":post_from" => $post_from
@@ -107,7 +108,7 @@ if ($user->id === $_SESSION['id']) {
 			<span class="vkontakte-main-text-B">В</span>контакте
 		</a>
 		<div class="vk-left">
-			<a href="profile.html" class="vk-button">Моя страница</a>
+			<a href="profile.php" class="vk-button">Моя страница</a>
 			<a href="friends.php" class="vk-button">Друзья</a>
 		</div>
 
@@ -183,16 +184,19 @@ _END;
 							</form>
 							</div>
 <?php
+
 if (isset($error)) {
-$error = htmlspecialchars($error);
+	foreach ($error as $err) {
+	$err = htmlspecialchars($err);
 echo <<<_END
 	
 	<div class='post'>
 		<h3 style="margin: 0;">Ошибка</h3>
-		{$error}
+		{$err}
 		<a href='vkontakte.php'>Перезагрузка</a>
 	</div>
 _END;
+	}
 }
 $stmt = $pdo->prepare("SELECT * FROM posts WHERE post_from = :id ORDER BY id DESC");
 $stmt->execute([':id' => $_GET['id']]);

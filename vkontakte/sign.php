@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" &&
 		<div class="vk-right" id="vk-right">
 			<a href="about.php" class="vk-button">Сообщения</a>
 			<a href="search.php" class="vk-button">Поиск</a>
-			<a href="register_test.php" class="vk-button" id="userStatus">Регистрация</a>
+			<a href="register.php" class="vk-button" id="userStatus">Регистрация</a>
 		</div>
 	</div>
 </header>
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" &&
 		<div style="margin: 10px 0;">
 			<button type="submit" name="sign_btn" class="createPostButton">Вход</button>
 		</form>
-			<a type="button" class="vk-button" href="register_test.php">Регистрация</a>
+			<a type="button" class="vk-button" href="register.php">Регистрация</a>
 		</div>
 	</div>
 </main>

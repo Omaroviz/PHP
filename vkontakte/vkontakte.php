@@ -13,8 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['like'])) {
-
-	
+	// Потом	
 }
 ?>
 
@@ -108,6 +107,18 @@ if (isset($_SESSION['name'])) {
 
 		<!-- Сюда будут падать новые посты -->
 <?php
+if (empty($_SESSION['id'])) {
+echo <<<_END
+	
+	<div class='post'>
+		<h3 style="margin: 0;">Добро пожаловать!</h3>
+		<a href='sign.php'>Войдите</a> или
+		<a href='register.php'>Зарегистрируйтесь</a>
+	</div>
+_END;
+
+}
+
 if (isset($error)) {
 $error = htmlspecialchars($error);
 echo <<<_END
@@ -155,7 +166,7 @@ echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($pos
 <footer id="vniz" style="margin: 0;">
 	<a href="#" class="vk-button" onclick="confirm('Fork me? Fork you! @octocat')">О сайте</a>
 © 2026 Вконтакте Druza. Исходный код распространяется под лицензией 
-<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener noreferrer">GNU General Public License v3</a>.
+<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener noreferrer">GNU GPL v3</a> на сайте <a href='https://www.GitHub.com/Omaroviz/PHP'>GitHub</a>.
 </footer>
 
 </body>
