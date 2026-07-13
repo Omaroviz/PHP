@@ -94,6 +94,7 @@ if (isset($_SESSION['name'])) {
 		<!--<a href="" class="sidebar-window-post-btn">Нравиться друзьям</a>-->
 		<!--</div>-->
 	</aside>
+
 	<div class="main-content">
 		<div class="post">
 			<form method="POST" action="new_post.php">
@@ -153,7 +154,7 @@ echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($pos
 	echo '</p><a class="vk-button" href="?delete_id='.htmlspecialchars($post->id).'">Удалить</a>';
 	}
 	}
-	echo "</div>";
+	echo " <a href='post.php?id=".$post->id."' class='vk-button'>Комментарии</a></div>";
 
 }
 

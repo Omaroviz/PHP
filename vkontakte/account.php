@@ -14,6 +14,13 @@ if (!isset($_GET['site'])) {
 	exit();
 
 }
+$user = new User($_SESSION['id'], $pdo);
+	$name = htmlspecialchars($_SESSION['name']);
+	$user_age = htmlspecialchars($user->age);
+	$user_about = htmlspecialchars($user->about);
+	$user_city = htmlspecialchars($user->city);
+	$username = htmlspecialchars($user->username);
+
 ?>
 
 <!DOCTYPE html>
@@ -44,7 +51,7 @@ if (!isset($_GET['site'])) {
 			<button type="submit">Поиск</button>
 			</form>
 																						
-			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
+			<a href="account.php" class="vk-button">Настройки</a>
 			<a href="search.php" class="vk-button">Поиск</a>
 			<?php 
 			if (isset($_SESSION['username'])) {
@@ -93,8 +100,6 @@ if (
 	!empty($_POST['new2_password'])
 ) {
 	if ($_POST['new2_password'] === $_POST['new_password']) {
-	
-		$user = new User($_SESSION['id'], $pdo);
 		if (password_verify($_POST['old_password'], $user->password)) {
 			echo "Молодец, малыш!<br>";
 			$hashed = password_hash($_POST['new_password'], PASSWORD_DEFAULT);
@@ -109,16 +114,13 @@ if (
 } 
 
 if (isset($_GET['site']) && $_GET['site'] === "main") {
-	echo "<h3 style='text-align: center'>Управление аккаунтом</h3>";
+	echo <<<_END
+		<h3 style='text-align: center'>Управление аккаунтом</h3>
+		<p>Привет, {$name}!
+	_END;
 }
 
 if (isset($_GET['site']) && $_GET['site'] === "info") {
-	$user = new User($_SESSION['id'], $pdo);
-	$name = htmlspecialchars($_SESSION['name']);
-	$user_age = htmlspecialchars($user->age);
-	$user_about = htmlspecialchars($user->about);
-	$user_city = htmlspecialchars($user->city);
-	$username = htmlspecialchars($user->username);
 	echo <<<_END
 		<h3 style='text-align: center'>Личная информация</h3>
 		<div class='account_info_info'>

@@ -27,12 +27,12 @@ class User {
 		$stmt->execute([':id' => $id]);
 		$users_info = $stmt->fetch();
 		if ($users_info) {
-		$this->name = $users_info['name'];
-		$this->username = $users_info['username'];
-		$this->password = $users_info['password'];
-		$this->city = $users_info['city'] ?? "Не выбрано";
-		$this->about = $users_info['about'] ?? "Не выбрано";
-		$this->age = $users_info['age'] ?? "Не выбрано";
+		$this->name = htmlspecialchars($users_info['name']);
+		$this->username = htmlspecialchars($users_info['username']);
+		$this->password = htmlspecialchars($users_info['password']);
+		$this->city = htmlspecialchars($users_info['city'] ?? "Не выбрано");
+		$this->about = htmlspecialchars($users_info['about'] ?? "Не выбрано");
+		$this->age = htmlspecialchars($users_info['age'] ?? "Не выбрано");
 		}
 	}
 	
@@ -93,6 +93,7 @@ class Post {
 	public $author_id;
 	public $post_from;
     	private $db;
+    	public $comments;
 public function __construct($data, $pdo = null) {
     if (is_array($data)) {
         // Если передан массив — берём данные из него
@@ -132,6 +133,20 @@ public function __construct($data, $pdo = null) {
 			$
 		}
 	 */
+	public function addComment($text, $pdo) {
+		$stmt = $pdo->prepare('INSERT INTO comments(text, author_id, post_id) VALUES(:text, :author_id, :post_id)');
+		$stmt->execute([
+			':text' => $text,
+			':author_id' => $_SESSION['id'],
+			':post_id' => $this->id,
+		]);
+	}
+
+	public function showComment($pdo) {
+		$stmt = $pdo->prepare('SELECT comments.*, users.username FROM comments LEFT JOIN users ON comments.author_id = users.id WHERE comments.post_id = :id ORDER BY comments.id DESC');
+		$stmt->execute([':id' => $this->id]);
+		$this->comments = $stmt->fetchAll();
+	}
 }
 
 class Search {
