@@ -75,9 +75,17 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
 <div style='margin: 0 30%'>
 
 <?php
+if (!isset($_GET['id'])) {
+	header('Location: vkontakte.php');
+	exit();
+}
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 	
 $post = new Post($_GET['id'], $pdo);
+if ($post->error) {
+	echo "<h1 style='text-align: center'>404. Пост не найден</h1><div style='text-align: center; font-weight: bold'><a href='vkontakte.php'>Перейти на главную страницу</a></div>";
+	exit();
+}
 $title = htmlspecialchars($post->title);
 $text = htmlspecialchars($post->text);
 $author = htmlspecialchars($post->author);
@@ -96,21 +104,23 @@ echo "<small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->d
 	echo '</p><a class="vk-button" href="?delete_id='.htmlspecialchars($post->id).'">Удалить</a>';
 	}
 	}
-}
+
 echo "</div>";
+}
 ?>
 <h3>Комментарий</h3>
 <form method='POST'>
-<textarea placeholder='Введите комментарий' name='text'></textarea>
-<button type='submit' name='add_comment_btn'>Отправить</button>
+<textarea placeholder='Введите комментарий' name='text' class='post_comment_text'></textarea>
+<button type='submit' name='add_comment_btn' class='post_comment_btn'>Отправить</button>
 </form>
 <?php
+if (isset($_SESSION['id'])) {
 if (isset($_POST['add_comment_btn']) && isset($_POST['text'])) {
 	$post = new Post($_GET['id'], $pdo);
 	$post->addComment($_POST['text'], $pdo);
 	header('Location: '.$_SERVER['REQUEST_URI']);
 	exit();
-}
+}} else {header('Location: sign.php'); exit();}
 
 $post->showComment($pdo);
 $comments = $post->comments;
@@ -122,9 +132,15 @@ if ($comments) {
 			<div class='post' style='padding: 0 10px'>
 			<p style= 'display: inline-block; margin: 10px 0 10px 3px'>{$text}</p><br>
 			<small style='color: grey; font-weight: bold; display: inline-block; margin: 0 0 10px 3px'>@{$author}</small>
-			</div>
-		_END;
+			_END;
+		if (isset($_SESSION['id']) && $_SESSION['id'] === $comment['author_id']) {echo " <a href='?id=".htmlspecialchars($_GET['id'])."&delete=".htmlspecialchars($comment['id'])."'>Удалить</a>";}
+		echo "</div>";
 	}
+}
+if (isset($_GET['delete'])) {
+	$post->deleteComment($_GET['delete']);
+	header('Location: post.php?id='.$_GET['id']);
+	exit();
 }
 ?>
 </div>

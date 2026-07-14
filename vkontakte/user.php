@@ -105,6 +105,7 @@ class Post {
 	public $post_from_username;
 	public $title;
 	public $text;
+	public $error;
 	public $author;
 	public $date;
 	public $author_id;
@@ -145,7 +146,9 @@ WHERE posts.id = :id");
             $this->author_id = $post['author_id'];
             $this->post_from_username = $post['wall_username'];
             $this->post_from = $post['post_from'];
-        }
+	} else {
+		$this->error = 1;
+	}
     }
 }
 	public function delete($pdo) {
@@ -182,6 +185,18 @@ WHERE posts.id = :id");
 		$stmt->execute([
 			':post_id' => $id
 		]);
+	}
+
+	public function deleteComment($id) {
+		$pdo = $this->db;
+		$stmt = $pdo->prepare('SELECT author_id FROM comments WHERE id = :id');
+		$stmt->execute([':id' => $id]);
+		if ($stmt->fetchColumn()) {
+		$stmt = $pdo->prepare('DELETE FROM comments WHERE id = :id');
+		$stmt->execute([':id' => $id]);
+		} else {
+			echo "Вы не можете удалить комментарий";
+		}
 	}
 }
 
