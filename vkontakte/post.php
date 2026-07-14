@@ -16,6 +16,17 @@ $user = new User($_SESSION['id'], $pdo);
 	$user_city = htmlspecialchars($user->city);
 	$username = htmlspecialchars($user->username);
 }
+
+if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
+	$post = new Post($_GET['delete_id'], $pdo);
+	if ($_SESSION['id'] === $post->author_id || $_SESSION['username'] === "admin") {
+
+		$post->delete($pdo);
+		header('Location: vkontakte.php');
+		exit();
+	} else {$error = "Вы не можете удалить этот пост!";}
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -69,15 +80,24 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 $post = new Post($_GET['id'], $pdo);
 $title = htmlspecialchars($post->title);
 $text = htmlspecialchars($post->text);
+$author = htmlspecialchars($post->author);
 echo <<<_END
 <div class='post'> 
 <h3 style='margin: 0;'>{$title}</h3>
 <p>{$text}</p>
-</div>
-
 _END;
+if (is_numeric($post->post_from)) {
+echo "<small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)." | На стене @".htmlspecialchars($post->post_from_username)."</small>";
+} else {
+	echo "<small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>"; 
 }
-
+	if (isset($_SESSION['username'])) {
+	if ($_SESSION['username'] === $post->author || $_SESSION['username'] == "admin"){
+	echo '</p><a class="vk-button" href="?delete_id='.htmlspecialchars($post->id).'">Удалить</a>';
+	}
+	}
+}
+echo "</div>";
 ?>
 <h3>Комментарий</h3>
 <form method='POST'>

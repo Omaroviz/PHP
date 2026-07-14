@@ -22,17 +22,33 @@ class User {
 	private $db;
 	public function __construct($id, $pdo) {
 		$this->db = $pdo;
+		/*
+		$low = 0;
+		$high = count($arr) - 1;
+		while ($low <= $high) {
+			$mid = floor(($high - $low) / 2);
+			$guess = $arr[$mid];
+			if ($guess == $item) {
+				return $mid;
+			} else if ($guess > $item) {
+				$high = $mid - 1;
+			} else {
+				$low = $mid + 1;
+			}
+		}
+
+		 */
 		$stmt = $pdo->prepare("SELECT * FROM users LEFT JOIN users_info ON users.id = users_info.id WHERE users.id = :id");
 		$this->id = $id;
 		$stmt->execute([':id' => $id]);
 		$users_info = $stmt->fetch();
 		if ($users_info) {
-		$this->name = htmlspecialchars($users_info['name']);
-		$this->username = htmlspecialchars($users_info['username']);
-		$this->password = htmlspecialchars($users_info['password']);
-		$this->city = htmlspecialchars($users_info['city'] ?? "Не выбрано");
-		$this->about = htmlspecialchars($users_info['about'] ?? "Не выбрано");
-		$this->age = htmlspecialchars($users_info['age'] ?? "Не выбрано");
+		$this->name = $users_info['name'];
+		$this->username = $users_info['username'];
+		$this->password = $users_info['password'];
+		$this->city = $users_info['city'] ?? "Не выбрано";
+		$this->about = $users_info['about'] ?? "Не выбрано";
+		$this->age = $users_info['age'] ?? "Не выбрано";
 		}
 	}
 	
@@ -86,6 +102,7 @@ class User {
 class Post {
 
 	public $id;
+	public $post_from_username;
 	public $title;
 	public $text;
 	public $author;
@@ -107,7 +124,16 @@ public function __construct($data, $pdo = null) {
     } else {
         // Если передан ID — загружаем из БД
         $this->db = $pdo;
-        $stmt = $pdo->prepare("SELECT * FROM posts WHERE id = :id");
+	$stmt = $pdo->prepare("
+
+SELECT 
+    posts.*, 
+    author.username AS author_username,
+    wall.username AS wall_username
+FROM posts
+LEFT JOIN users AS author ON posts.author_id = author.id
+LEFT JOIN users AS wall ON posts.post_from = wall.id
+WHERE posts.id = :id");
         $stmt->execute([':id' => $data]);
         $post = $stmt->fetch();
         if ($post) {
@@ -117,11 +143,13 @@ public function __construct($data, $pdo = null) {
             $this->author = $post['author'];
             $this->date = $post['date'];
             $this->author_id = $post['author_id'];
+            $this->post_from_username = $post['wall_username'];
             $this->post_from = $post['post_from'];
         }
     }
 }
 	public function delete($pdo) {
+		$this->deleteAllComments($this->id);
 		$stmt = $pdo->prepare("DELETE FROM posts WHERE id = :id");
 		$stmt->execute([':id' => $this->id]);
 	}
@@ -146,6 +174,14 @@ public function __construct($data, $pdo = null) {
 		$stmt = $pdo->prepare('SELECT comments.*, users.username FROM comments LEFT JOIN users ON comments.author_id = users.id WHERE comments.post_id = :id ORDER BY comments.id DESC');
 		$stmt->execute([':id' => $this->id]);
 		$this->comments = $stmt->fetchAll();
+	}
+
+	public function deleteAllComments($id) {
+		$pdo = $this->db;
+		$stmt = $pdo->prepare('DELETE FROM comments WHERE post_id = :post_id');
+		$stmt->execute([
+			':post_id' => $id
+		]);
 	}
 }
 
