@@ -218,7 +218,6 @@ OR name LIKE :text");
 	}
 }
 
-// Вход: $user->login("Kolbasenko" ,"kolbasa"); 
 /*
 echo "Имя: ".htmlspecialchars($user->name)."<br>";
 echo "Никнейм: ".htmlspecialchars($user->username)."<br>";

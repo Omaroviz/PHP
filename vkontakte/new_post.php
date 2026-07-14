@@ -20,6 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST"  && isset($_POST['add_post']) &&
 	]);
 	header("Location: vkontakte.php");
 	exit();
+} else {
+	header('Location: vkontakte.php');
+	exit();
 }
 } else {
 	header("Location: sign.php");

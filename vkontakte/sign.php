@@ -45,7 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" &&
 		</div>
 
 		<div class="vk-right" id="vk-right">
-			<a href="about.php" class="vk-button">Сообщения</a>
+	
+	<a href="account.php" class="vk-button">Настройки</a>
 			<a href="search.php" class="vk-button">Поиск</a>
 			<a href="register.php" class="vk-button" id="userStatus">Регистрация</a>
 		</div>

@@ -28,7 +28,8 @@ session_start();
 		</div>
 
 		<div class="vk-right" id="vk-right">
-			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
+		
+	<a href="account.php" class="vk-button">Настройки</a>
 			<a href="#" class="vk-button">Поиск</a>
 			<?php 
 			if (isset($_SESSION['username'])) {

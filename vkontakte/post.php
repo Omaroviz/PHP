@@ -133,7 +133,7 @@ if ($comments) {
 			<p style= 'display: inline-block; margin: 10px 0 10px 3px'>{$text}</p><br>
 			<small style='color: grey; font-weight: bold; display: inline-block; margin: 0 0 10px 3px'>@{$author}</small>
 			_END;
-		if (isset($_SESSION['id']) && $_SESSION['id'] === $comment['author_id']) {echo " <a href='?id=".htmlspecialchars($_GET['id'])."&delete=".htmlspecialchars($comment['id'])."'>Удалить</a>";}
+		if (isset($_SESSION['id']) && $_SESSION['id'] === $comment['author_id']) {echo "<br> <a class='vk-button' style='padding: 5px 10px; margin-bottom: 10px' href='?id=".htmlspecialchars($_GET['id'])."&delete=".htmlspecialchars($comment['id'])."'>Удалить</a>";}
 		echo "</div>";
 	}
 }
