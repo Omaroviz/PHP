@@ -1,11 +1,13 @@
 <?php
 
 include_once 'function.php';
+include_once 'user.php';
 
 $host = 'localhost';
 $dbname = 'vkontakte';
 $username = 'root';
 $password = '';
+
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8",$username, $password);

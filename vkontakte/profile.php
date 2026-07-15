@@ -217,7 +217,8 @@ echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($pos
 	echo '</p><a href="?id='.urlencode($_GET['id']).'&delete_id='.urlencode($post->id).'" class="vk-button">Удалить</a></a>';
 	}
 	}
-	echo "</div>";
+	echo " <a href='post.php?id=".$post->id."' class='vk-button'>Комментарии</a></div>";
+
 
 }
 
