@@ -3,7 +3,7 @@
 include_once 'function.php';
 include_once 'user.php';
 
-$host = 'localhost';
+$host = getenv('DB_HOST') ?: 'localhost';
 $dbname = 'vkontakte';
 $username = 'root';
 $password = '';

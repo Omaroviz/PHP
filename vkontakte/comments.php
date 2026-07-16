@@ -3,31 +3,15 @@
 include_once 'login.php';
 include_once 'user.php';
 session_start();
-if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
-	$post = new Post($_GET['delete_id'], $pdo);
-	if ($_SESSION['id'] === $post->author_id || $_SESSION['username'] === "admin") {
-		$post->delete($pdo);
-		header('Location: '.$_SERVER['PHP_SELF']);
-		exit();
-	} else {$error = "Вы не можете удалить этот пост!";}
-}
-
-if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['like'])) {
-	// Потом	
-}
+$user = new User($_SESSION['id'], $pdo);
 ?>
 
 <!DOCTYPE html>
-<html lang="ru">
-
+<html lang='ru'>
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="vkontaktestyle.css">
-	<link rel="icon" href="media/vkontakte.ico">
-	<title>Вконтакте Druza</title>
+<title>Мои комментарии</title>
+<link rel="stylesheet" href="vkontaktestyle.css" type="text/css" media="all"/>
 </head>
-
 <body>
 <header style="">
 	<div class="vkontakte-main-panel">
@@ -77,7 +61,7 @@ if (isset($_SESSION['name'])) {
 			<a href="#" class="vk-button" id="subscribeButton" onclick="subscribe()">Подписаться</a>
 		</nav>
 		<div class="sidebar-window-post">
-			<a href="vkontakte.php" class="sidebar-window-post-btn">Все посты</a>
+			<a href="" class="sidebar-window-post-btn">Все посты</a>
 			<a href="" class="sidebar-window-post-btn">Посты друзей</a>
 			<a href="" class="sidebar-window-post-btn">Посты каналов</a>
 			<a href="" class="sidebar-window-post-btn">Общая лента</a>
@@ -85,7 +69,7 @@ if (isset($_SESSION['name'])) {
 		<div class="sidebar-window-post">
 			<a href="" class="sidebar-window-post-btn">Мои лайки</a>
 			<a href="" class="sidebar-window-post-btn">Мои дизлайки</a>
-			<a href="comments.php" class="sidebar-window-post-btn">Мои комментарии</a>
+			<a href="" class="sidebar-window-post-btn">Мои комментарии</a>
 			<!--			<a href="" class="sidebar-window-post-btn">Мои голоса: 0</a>-->
 		</div>
 		<!--<div class="sidebar-window-post">-->
@@ -96,16 +80,6 @@ if (isset($_SESSION['name'])) {
 	</aside>
 
 	<div class="main-content">
-		<div class="post">
-			<form method="POST" action="new_post.php">
-			<p class="postmain">Новая запись</p>
-			<textarea name="title" id="postName" placeholder="Заголовок" class="createPostName" style='resize: none'></textarea>
-			<textarea name="text" id="postInput" placeholder="Что у вас нового?" class="createPostText" style='resize: none'></textarea>
-			<!-- <input type="text" id="postCommand" placeholder="Команда" class="createPostCommand"> -->
-			<button type="submit" name="add_post" class="createPostButton">Опубликовать</button>
-			</form>
-		</div>
-
 		<!-- Сюда будут падать новые посты -->
 <?php
 if (empty($_SESSION['id'])) {
@@ -131,34 +105,18 @@ echo <<<_END
 	</div>
 _END;
 }
-echo <<<_END
-_END;
-$stmt = $pdo->query("SELECT posts.*, users.username FROM posts LEFT JOIN users ON posts.post_from = users.id ORDER BY posts.id DESC");
-$posts = $stmt->fetchAll();
-foreach ($posts as $poster) {
-	$post = new Post($poster);
-	$title = htmlspecialchars($post->title);
-	$text = htmlspecialchars($post->text);
-		echo <<<_END
-    <div class="post">
-	<h3 style="margin: 0;">{$title}</h3>
-	{$text}
-_END;
-if (is_numeric($post->post_from)) {
-echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)." | На стене @".htmlspecialchars($poster['username'])."</small>";
-} else {
-	echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>"; 
+$stmt = $pdo->prepare('SELECT * FROM comments WHERE author_id = :author_id');
+$stmt->execute([':author_id' => $user->id]);
+foreach ($stmt->fetchAll() as $detail) {
+	$text = htmlspecialchars($detail['text']);
+	$post_id = $detail['post_id'];
+	echo <<<_END
+		<div class='post' style='padding: 0 3px'>
+		<p style='display: inline-block; margin: 10px 0 10px 3px'>{$text}</p>
+		<a href='post?id={$post_id}'>К посту</a>
+		</div>
+		_END;
 }
-	if (isset($_SESSION['username'])) {
-	if ($_SESSION['username'] === $post->author || $_SESSION['username'] == "admin"){
-	echo '</p><a class="vk-button" href="?delete_id='.htmlspecialchars($post->id).'">Удалить</a>';
-	}
-	}
-	echo " <a href='post.php?id=".$post->id."' class='vk-button'>Комментарии</a></div>";
-
-}
-
-
 
 ?>
 
@@ -173,7 +131,5 @@ echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($pos
 </body>
 
 </html>
-
-
 
 
