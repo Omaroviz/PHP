@@ -820,3 +820,13 @@ body {
 .post_comment_btn:hover {
 	background-color:#d7d7db;
 }
+
+.profile_add_friend_btn {
+	text-align: center; 
+	min-width: 300px; 
+	border-radius: 3px;
+	border: 1px solid grey;
+	background-color: #edeef0;
+}
+
+.profile_add_friend_btn:hover

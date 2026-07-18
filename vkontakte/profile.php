@@ -142,6 +142,11 @@ if (isset($_SESSION['id'])) {
 					<div class="profile-info">
 						<img src="media/Pavel_Durov_logo.jpg" alt="Фото профиля" class="profile-logo">
 						<h1 class="profileName"><span><?php echo htmlspecialchars($user->name);?></span></h1>
+						<?php
+if (!$edit_profile) {
+	echo "<button class='profile_add_friend_btn'>Добавить в друзья</button>";
+}
+?>
 						<h3>Личная информация:</h3>
 						<ul>
 						<li>Никнейм: @<span id="profile-info-userName"><?php echo htmlspecialchars($user->username)?></span></li>
