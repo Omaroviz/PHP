@@ -91,6 +91,28 @@ class User {
 			$_SESSION['id'] = $hash_password['id'];
 			$_SESSION['username'] = $hash_password['username'];
 			$_SESSION['name'] = $hash_password['name'];
+			$stmt = $pdo->prepare('SELECT * FROM token WHERE id = :id');
+			$stmt->execute([':id' => $hash_password['id']]);
+			$token = $stmt->fetch();
+			if (!$token) {
+				$cookie_token = substr(bin2hex(random_bytes(10)), 0, $length);
+				$date = date('d/m/Y', strtotime('+12 month'));
+				$stmt = $pdo->prepare('INSERT INTO token(id, cookie_token, date) VALUES(:id, :cookie_token, :date)');	
+				$stmt->execute([
+					':id' => $hash_password['id'],
+					':cookie_token' => $cookie_token,
+					':date' => $date
+				]);
+				setcookie('cookie_token', $cookie_token, [
+					'expires'  => $date,
+					'path'     => '/',          
+					'domain'   => '',           
+					'secure'   => false,        
+					'httponly' => true,         
+					'samesite' => 'Lax'           
+				]);
+			}
+		
 			return 1;
 		} else {
 			return 0;
