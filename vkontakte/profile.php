@@ -2,8 +2,9 @@
 
 include_once 'login.php';
 include_once 'user.php';
-
 session_start();
+$csrf = new CSRF;
+$token = $csrf->newToken();
 
 if (!isset($_SESSION['username'])) {
 	header('Location: sign.php');
@@ -12,15 +13,16 @@ if (!isset($_SESSION['username'])) {
 
 $author_wall = $_GET['id'];
 
-
-if ($_SERVER['REQUEST_METHOD'] == "GET" && isset($_GET['delete_id'])) {
-	$post = new Post($_GET['delete_id'], $pdo);
-	if ($_SESSION['id'] == $post->author_id || $_SESSION['username'] == "admin" || $_SESSION['id'] == $author_wall) {
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['delete_id']) && isset($_POST['delete_btn']) && isset($_POST['csrf_token'])) {
+	if (!$csrf->validateToken($_POST['csrf_token'])) {die('CSRF ошибка. Доступ запрещен');}
+	$post = new Post($_POST['delete_id'], $pdo);
+	if ($_SESSION['id'] === $post->author_id || $_SESSION['username'] === "admin") {
 		$post->delete($pdo);
 		header('Location: '.$_SERVER['PHP_SELF']);
 		exit();
-	} else {$error[] = "Вы не можете удалить этот пост!";}
+	} else {$error = "Вы не можете удалить этот пост!";}
 }
+
 
 $user = new User($_SESSION['id'], $pdo);
 if (isset($_GET['id']) && $_GET['id'] != $_SESSION['id']) {
@@ -29,10 +31,9 @@ if (isset($_GET['id']) && $_GET['id'] != $_SESSION['id']) {
     $viewUser = $user;
 }
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])
-	&& !empty($_POST['title']) || !empty($_POST['text'])) {
-	
-    $post_from = isset($_GET['id']) ? $_GET['id'] : $_SESSION['id'];
-
+	&& isset($_POST['csrf_token']) && (!empty($_POST['title']) || !empty($_POST['text']))) {
+	$post_from = isset($_GET['id']) ? $_GET['id'] : $_SESSION['id'];
+	if (!$csrf->validateToken($_POST['csrf_token'])) {die('CSRF atack');}
 	$sql = "INSERT INTO posts(title, text, author, author_id, post_from) VALUES(:title, :text, :author, :author_id, :post_from)";
 	$stmt = $pdo->prepare($sql);
 	$stmt->execute([
@@ -182,6 +183,7 @@ _END;
 					<div class="profile-post-container">
 						<div class="post">
 							<form method="POST">
+								<input type='hidden' name='csrf_token' value='<?php echo $token?>'>
 								<p class="postmain">Новый пост</p>
 								<textarea name="title" id="postName" placeholder="Заголовок" class="createPostName"></textarea>
 								<textarea name="text" id="postInput" placeholder="Что у вас нового?" class="createPostText"></textarea>
@@ -219,7 +221,11 @@ _END;
 echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>";
 	if (isset($_SESSION['username'])) {
 	if ($_SESSION['username'] === $post->author || $_SESSION['username'] == "admin" || $_SESSION['id'] == $_GET['id']){
-	echo '</p><a href="?id='.urlencode($_GET['id']).'&delete_id='.urlencode($post->id).'" class="vk-button">Удалить</a></a>';
+	echo '</p><form method="post" style="all: unset">
+	<input type="hidden" name="csrf_token" value="'.$token.'">
+	<input type="hidden" name="delete_id" value="'.htmlspecialchars($post->id).'">
+	<button class="vk-button" type="submit" name="delete_btn">Удалить</button></form>
+';
 	}
 	}
 	echo " <a href='post.php?id=".$post->id."' class='vk-button'>Комментарии</a></div>";
