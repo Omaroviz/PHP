@@ -8,8 +8,9 @@ session_start();
 $csrf = new CSRF;
 $token = $csrf->newToken();
 
-if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
-	$post = new Post($_GET['delete_id'], $pdo);
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['delete_id']) && isset($_POST['delete_btn']) && isset($_POST['csrf_token'])) {
+	if (!$csrf->validateToken($_POST['csrf_token'])) {die('CSRF ошибка. Доступ запрещен');}
+	$post = new Post($_POST['delete_id'], $pdo);
 	if ($_SESSION['id'] === $post->author_id || $_SESSION['username'] === "admin") {
 		$post->delete($pdo);
 		header('Location: '.$_SERVER['PHP_SELF']);
@@ -157,7 +158,11 @@ echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($pos
 }
 	if (isset($_SESSION['username'])) {
 	if ($_SESSION['username'] === $post->author || $_SESSION['username'] == "admin"){
-	echo '</p><a class="vk-button" href="?delete_id='.htmlspecialchars($post->id).'">Удалить</a>';
+	echo '</p><form method="post" style="all: unset">
+	<input type="hidden" name="csrf_token" value="'.$token.'">
+	<input type="hidden" name="delete_id" value="'.htmlspecialchars($post->id).'">
+	<button class="vk-button" type="submit" name="delete_btn">Удалить</button></form>
+';
 	}
 	}
 	echo " <a href='post.php?id=".$post->id."' class='vk-button'>Комментарии</a></div>";
