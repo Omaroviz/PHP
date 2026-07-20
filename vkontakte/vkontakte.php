@@ -3,6 +3,11 @@
 include_once 'login.php';
 include_once 'user.php';
 session_start();
+
+// CSRF Токен 
+$csrf = new CSRF;
+$token = $csrf->newToken();
+
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
 	$post = new Post($_GET['delete_id'], $pdo);
 	if ($_SESSION['id'] === $post->author_id || $_SESSION['username'] === "admin") {
@@ -99,6 +104,7 @@ if (isset($_SESSION['name'])) {
 		<div class="post">
 			<form method="POST" action="new_post.php">
 			<p class="postmain">Новая запись</p>
+			<input type='hidden' name='csrf_token' value='<?php echo $token?>'>
 			<textarea name="title" id="postName" placeholder="Заголовок" class="createPostName" style='resize: none'></textarea>
 			<textarea name="text" id="postInput" placeholder="Что у вас нового?" class="createPostText" style='resize: none'></textarea>
 			<!-- <input type="text" id="postCommand" placeholder="Команда" class="createPostCommand"> -->

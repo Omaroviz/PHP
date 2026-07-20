@@ -1,14 +1,19 @@
 <?php
 
 include_once 'login.php';
+include_once 'user.php';
 
 session_start();
 
 
 if (isset($_SESSION['username'])) {
-if ($_SERVER['REQUEST_METHOD'] === "POST"  && isset($_POST['add_post']) &&
-	$_SESSION['username'] && !empty($_POST['text']) || !empty($_POST['title'])) {
-	echo codetext("Отладка", "Добавил пост");
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post']) &&
+	$_SESSION['csrf_token'] && (!empty($_POST['text']) || !empty($_POST['title']))) {
+	// echo codetext("Отладка", "Добавил пост");
+	$csrf = new CSRF();
+	if (!$csrf->validateToken($_POST['csrf_token'])) {
+		die('CSRF ошибка. Доступ запрещен.');
+	}
 	$sql = "INSERT INTO posts(title, text, author, author_id, post_from) VALUES(:title, :text, :author, :author_id, :post_from)";
 	$stmt = $pdo->prepare($sql);
 	$stmt->execute([

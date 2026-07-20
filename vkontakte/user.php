@@ -218,6 +218,22 @@ OR name LIKE :text");
 	}
 }
 
+class CSRF {
+	public function newToken() {
+		if (empty($_SESSION['csrf_token'])) {
+			$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+		}
+		return $_SESSION['csrf_token'];
+	}
+	public function validateToken($post) {
+		if (!isset($_SESSION['csrf_token']) || !isset($post)) {
+			return false;
+		}
+		return hash_equals($_SESSION['csrf_token'], $post);
+	}
+
+}
+
 /*
 echo "Имя: ".htmlspecialchars($user->name)."<br>";
 echo "Никнейм: ".htmlspecialchars($user->username)."<br>";
