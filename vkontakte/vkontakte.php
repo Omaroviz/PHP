@@ -3,10 +3,11 @@
 include_once 'login.php';
 include_once 'user.php';
 session_start();
-
 // CSRF Токен 
 $csrf = new CSRF;
 $token = $csrf->newToken();
+
+$stmt = $pdo->prepare('SELECT * FROM token');
 
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['delete_id']) && isset($_POST['delete_btn']) && isset($_POST['csrf_token'])) {
 	if (!$csrf->validateToken($_POST['csrf_token'])) {die('CSRF ошибка. Доступ запрещен');}
@@ -17,7 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['delete_id']) && isset
 		exit();
 	} else {$error = "Вы не можете удалить этот пост!";}
 }
-
+if (isset($_COOKIE['cookie_token'])) {
+	echo $_COOKIE['cookie_token'];
+}
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['like'])) {
 	// Потом	
 }
@@ -168,7 +171,6 @@ echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($pos
 	echo " <a href='post.php?id=".$post->id."' class='vk-button'>Комментарии</a></div>";
 
 }
-
 
 
 ?>

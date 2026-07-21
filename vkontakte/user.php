@@ -16,7 +16,6 @@ try {
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
 class User {
 	public $id, $username, $password, $name, $city, $about, $age;
 	private $db;
@@ -76,10 +75,19 @@ class User {
 	}
 
 	public function logout() {
-		$_SESSION['id'] = null;
-		
-		$_SESSION['username'] = null;
-		$_SESSION['name'] = null;
+		$pdo = $this->db;
+		$stmt = $pdo->prepare('DELETE FROM token WHERE id = :id');
+		$stmt->execute([':id' => $this->id]);
+		setcookie('cookie_token', '', [
+			'expires'  => time() - 3600, // Устанавливаем на час назад
+			'path'     => '/',
+			'domain'   => '',
+			'secure'   => false,
+			'httponly' => true,
+			'samesite' => 'Lax'
+		]);
+		unset($_COOKIE['cookie_token']);
+		$_SESSION = [];
 	}
 
 	public function login($username, $password) {
@@ -95,12 +103,13 @@ class User {
 			$stmt->execute([':id' => $hash_password['id']]);
 			$token = $stmt->fetch();
 			if (!$token) {
-				$cookie_token = substr(bin2hex(random_bytes(10)), 0, $length);
-				$date = date('d/m/Y', strtotime('+12 month'));
+				$cookie_token = substr(bin2hex(random_bytes(30)), 0, 30);
+				$date = time() + 31*24*3600;
+				$cookie_token_hash = password_hash($cookie_token, PASSWORD_DEFAULT);
 				$stmt = $pdo->prepare('INSERT INTO token(id, cookie_token, date) VALUES(:id, :cookie_token, :date)');	
 				$stmt->execute([
 					':id' => $hash_password['id'],
-					':cookie_token' => $cookie_token,
+					':cookie_token' => $cookie_token_hash,
 					':date' => $date
 				]);
 				setcookie('cookie_token', $cookie_token, [
@@ -111,6 +120,25 @@ class User {
 					'httponly' => true,         
 					'samesite' => 'Lax'           
 				]);
+			} else {
+				$cookie_token = substr(bin2hex(random_bytes(30)), 0, 30);
+				setcookie('cookie_token', $cookie_token, [
+					'expires' => $token['date'],
+					'path' => '/',
+					'domain' => '',
+					'secure' => false,
+					'httponly' => true,
+					'samesite' => 'Lax'
+				]);
+				$date = time() + 31 * 24 * 3600;
+				$cookie_token_hash = password_hash($cookie_token, PASSWORD_DEFAULT);
+				$stmt = $pdo->prepare('UPDATE token SET cookie_token = :cookie_token, date = :date WHERE id = :id');
+				$date = date('Y-m-d H:i:s', $date);
+				$stmt->execute([
+					':cookie_token' => $cookie_token_hash,
+					':date' => $date,
+					':id' => $this->id
+				]);
 			}
 		
 			return 1;
@@ -118,6 +146,31 @@ class User {
 			return 0;
 		}
 	}
+	
+	public function valid() {
+		$pdo = $this->db;
+		if (empty($_COOKIE['cookie_token'])) {
+			header('Location: sign.php');
+			exit();
+		}
+		$stmt = $pdo->prepare('SELECT * FROM token WHERE id = :id');
+		$stmt->execute([':id' => $this->id]);
+		$token_hash = $stmt->fetch();
+		if (!$token_hash) {
+			header('Location: sign.php');
+			exit();
+		}
+		$token_real = $_COOKIE['cookie_token'];
+		if (!password_verify($token_real, $token_hash['cookie_token'])) {
+			header('Location: sign.php');
+			exit();
+		}
+		if ($token_hash['date'] < time()) {
+			header('Location: sign.php');
+			exit();
+		}
+		
+	}	
 
 }
 
