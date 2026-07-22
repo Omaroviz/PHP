@@ -5,8 +5,11 @@ include_once 'user.php';
 session_start();
 $csrf = new CSRF;
 $token = $csrf->newToken();
-
-if (!isset($_SESSION['username'])) {
+$_SESSION = [];
+if (isset($_COOKIE['cookie_token']) && isset($_COOKIE['user_id'])) {
+	$user = new User($_COOKIE['user_id'], $pdo);
+	$user->valid();
+} else {
 	header('Location: sign.php');
 	exit();
 }
@@ -16,7 +19,7 @@ $author_wall = $_GET['id'];
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['delete_id']) && isset($_POST['delete_btn']) && isset($_POST['csrf_token'])) {
 	if (!$csrf->validateToken($_POST['csrf_token'])) {die('CSRF ошибка. Доступ запрещен');}
 	$post = new Post($_POST['delete_id'], $pdo);
-	if ($_SESSION['id'] === $post->author_id || $_SESSION['username'] === "admin") {
+	if ($user->id === $post->author_id || $user->username === "admin") {
 		$post->delete($pdo);
 		header('Location: '.$_SERVER['PHP_SELF']);
 		exit();
@@ -24,23 +27,22 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['delete_id']) && isset
 }
 
 
-$user = new User($_SESSION['id'], $pdo);
-if (isset($_GET['id']) && $_GET['id'] != $_SESSION['id']) {
+if (isset($_GET['id']) && $_GET['id'] != $user->id) {
     $user = new User($_GET['id'], $pdo);
 } else {
     $viewUser = $user;
 }
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])
 	&& isset($_POST['csrf_token']) && (!empty($_POST['title']) || !empty($_POST['text']))) {
-	$post_from = isset($_GET['id']) ? $_GET['id'] : $_SESSION['id'];
+	$post_from = isset($_GET['id']) ? $_GET['id'] : $user->id;
 	if (!$csrf->validateToken($_POST['csrf_token'])) {die('CSRF atack');}
 	$sql = "INSERT INTO posts(title, text, author, author_id, post_from) VALUES(:title, :text, :author, :author_id, :post_from)";
 	$stmt = $pdo->prepare($sql);
 	$stmt->execute([
 		":title" => trim($_POST['title']),
 		":text" => trim($_POST['text']),
-		":author" => $_SESSION['username'],
-		":author_id" => $_SESSION['id'],
+		":author" => $user->username,
+		":author_id" => $user->id,
 		":post_from" => $post_from
 	]);
 	header("Location: ".$_SERVER['REQUEST_URI']);
@@ -74,11 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
  */
 
 if (!$_GET['id']) {
-	header("Location: profile.php?id=".$_SESSION['id']);
+	header("Location: profile.php?id=".$user->id);
 	exit();
 }
 
-if ($user->id === $_SESSION['id']) {
+if ($user->id === $_GET['id']) {
 	$edit_profile = 1;
 } else {
 	$edit_profile = 0;
@@ -123,13 +125,7 @@ if ($user->id === $_SESSION['id']) {
 			
 	<a href="account.php" class="vk-button">Настройки</a>
 			<a href="search.php" class="vk-button">Поиск</a>
-			<?php
-if (isset($_SESSION['id'])) {
-	echo '<a href="logout.php" class="vk-button" id="userStatus">Выход</a>';
-} else {
-	echo '<a href="sign.php" class="vk-button" id="userStatus">Вход</a>';
-}
-?>
+			<a href="logout.php" class="vk-button" id="userStatus">Выход</a>
 		</div>
 	</div>
 
@@ -219,14 +215,12 @@ foreach ($posts as $poster) {
 	{$text}
 _END;
 echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>";
-	if (isset($_SESSION['username'])) {
-	if ($_SESSION['username'] === $post->author || $_SESSION['username'] == "admin" || $_SESSION['id'] == $_GET['id']){
+	if ($user->username === $post->author || $user->username == "admin" || $user->id == $_GET['id']){
 	echo '</p><form method="post" style="all: unset">
 	<input type="hidden" name="csrf_token" value="'.$token.'">
 	<input type="hidden" name="delete_id" value="'.htmlspecialchars($post->id).'">
 	<button class="vk-button" type="submit" name="delete_btn">Удалить</button></form>
 ';
-	}
 	}
 	echo " <a href='post.php?id=".$post->id."' class='vk-button'>Комментарии</a></div>";
 

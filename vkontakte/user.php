@@ -317,16 +317,25 @@ OR name LIKE :text");
 
 class CSRF {
 	public function newToken() {
-		if (empty($_SESSION['csrf_token'])) {
-			$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+		if (empty($_COOKIE['csrf_token'])) {
+			$newtoken = bin2hex(random_bytes(32));
+			setcookie('csrf_token', $newtoken, [
+				'expires' => time() + (12 * 3600),
+				'path' => '/',
+				'domain' => '',
+				'secure' => false,
+				'httponly' => true,
+				'samesite' => 'Lax'
+			]);
+			$_COOKIE['csrf_token'] = $newtoken;
 		}
-		return $_SESSION['csrf_token'];
+		return $_COOKIE['csrf_token'];
 	}
 	public function validateToken($post) {
-		if (!isset($_SESSION['csrf_token']) || !isset($post)) {
+		if (!isset($_COOKIE['csrf_token']) || !isset($post)) {
 			return false;
 		}
-		return hash_equals($_SESSION['csrf_token'], $post);
+		return hash_equals($_COOKIE['csrf_token'], $post);
 	}
 
 }
