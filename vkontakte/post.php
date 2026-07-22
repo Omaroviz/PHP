@@ -6,22 +6,19 @@ include_once 'user.php';
 session_start();
 $csrf = new CSRF;
 $token = $csrf->newToken();
-if (empty($_SESSION['id'])) {
+if (isset($_COOKIE['cookie_token']) && isset($_COOKIE['user_id'])) {
+	$user = new User($_COOKIE['user_id'], $pdo);
+	$user->valid();
+	$isAuth = TRUE;
 } else {
-
-
-$user = new User($_SESSION['id'], $pdo);
-	$name = htmlspecialchars($_SESSION['name']);
-	$user_age = htmlspecialchars($user->age);
-	$user_about = htmlspecialchars($user->about);
-	$user_city = htmlspecialchars($user->city);
-	$username = htmlspecialchars($user->username);
+	$isAuth = FALSE;
 }
+
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['delete_id']) && isset($_POST['delete_btn']) && isset($_POST['csrf_token'])) {
 	if (!$csrf->validateToken($_POST['csrf_token'])) {die('CSRF ошибка. Доступ запрещен');}
-	$post = new Post($_POST['delete_id'], $pdo);
-	if ($_SESSION['id'] === $post->author_id || $_SESSION['username'] === "admin") {
-		$post->delete($pdo);
+	$post = new Post($_GET['id'], $pdo);
+	if ($user->id == $post->author_id || $user->username === "admin") {
+		$post->delete();
 		header('Location: '.$_SERVER['PHP_SELF']);
 		exit();
 	} else {$error = "Вы не можете удалить этот пост!";}
@@ -60,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['delete_id']) && isset
 			<a href="account.php" class="vk-button">Настройки</a>
 			<a href="search.php" class="vk-button">Поиск</a>
 			<?php 
-			if (isset($_SESSION['username'])) {
+			if ($isAuth) {
 				echo "<a href='logout.php' class='vk-button'>Выход</a>";
 			} else {
 				echo "<a href='sign.php' class='vk-button' id='userStatus'>Вход</a>";
@@ -99,11 +96,11 @@ echo "<small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->d
 } else {
 	echo "<small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>"; 
 }
-	if (isset($_SESSION['username'])) {
-	if ($_SESSION['username'] === $post->author || $_SESSION['username'] == "admin"){
+	if ($isAuth) {
+	if ($user->username === $post->author || $user->username == "admin"){
 		echo '</p><form method="post" style="all: unset">
 	<input type="hidden" name="csrf_token" value="'.$token.'">
-	<input type="hidden" name="delete_id" value="'.htmlspecialchars($post->id).'">
+	<input type="hidden" name="delete_id" value="'.$post->id.'">
 	<button class="vk-button" type="submit" name="delete_btn">Удалить</button></form>
 ';
 	}
@@ -118,14 +115,17 @@ echo "</div>";
 <button type='submit' name='add_comment_btn' class='post_comment_btn'>Отправить</button>
 </form>
 <?php
-if (isset($_SESSION['id'])) {
 if (isset($_POST['add_comment_btn']) && isset($_POST['text'])) {
+	if (!$isAuth) {
+		header('Location: sign.php');
+		exit();
+	}
 	$post = new Post($_GET['id'], $pdo);
-	$post->addComment($_POST['text'], $pdo);
+	$user_id = $user->id;
+	$post->addComment($_POST['text'], $user_id);
 	header('Location: '.$_SERVER['REQUEST_URI']);
 	exit();
-}} else {header('Location: sign.php'); exit();}
-
+}
 $post->showComment($pdo);
 $comments = $post->comments;
 if ($comments) {
@@ -137,7 +137,7 @@ if ($comments) {
 			<p style= 'display: inline-block; margin: 10px 0 10px 3px'>{$text}</p><br>
 			<small style='color: grey; font-weight: bold; display: inline-block; margin: 0 0 10px 3px'>@{$author}</small>
 			_END;
-		if (isset($_SESSION['id']) && $_SESSION['id'] === $comment['author_id']) {echo "<br> <a class='vk-button' style='padding: 5px 10px; margin-bottom: 10px' href='?id=".htmlspecialchars($_GET['id'])."&delete=".htmlspecialchars($comment['id'])."'>Удалить</a>";}
+		if ($isAuth && $user->id === $comment['author_id']) {echo "<br> <a class='vk-button' style='padding: 5px 10px; margin-bottom: 10px' href='?id=".htmlspecialchars($_GET['id'])."&delete=".htmlspecialchars($comment['id'])."'>Удалить</a>";}
 		echo "</div>";
 	}
 }

@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['delete_id']) && isset
 	}
 	if (!$csrf->validateToken($_POST['csrf_token'])) {die('CSRF ошибка. Доступ запрещен');}
 	$post = new Post($_POST['delete_id'], $pdo);
-	if ($user->id === $post->author_id || $user->username === "admin") {
+	if ($user->id == $post->author_id || $user->username == "admin") {
 		$post->delete($pdo);
 		header('Location: '.$_SERVER['PHP_SELF']);
 		exit();

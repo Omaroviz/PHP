@@ -248,8 +248,9 @@ WHERE posts.id = :id");
 	}
     }
 }
-	public function delete($pdo) {
-		$this->deleteAllComments($this->id);
+	public function delete() {
+		$pdo = $this->db;
+		$this->deleteAllComments();
 		$stmt = $pdo->prepare("DELETE FROM posts WHERE id = :id");
 		$stmt->execute([':id' => $this->id]);
 	}
@@ -261,26 +262,28 @@ WHERE posts.id = :id");
 			$
 		}
 	 */
-	public function addComment($text, $pdo) {
+	public function addComment($text, $user_id) {
+		$pdo = $this->db;
 		$stmt = $pdo->prepare('INSERT INTO comments(text, author_id, post_id) VALUES(:text, :author_id, :post_id)');
 		$stmt->execute([
 			':text' => $text,
-			':author_id' => $_SESSION['id'],
-			':post_id' => $this->id,
+			':author_id' => $user_id,
+			':post_id' => $this->id
 		]);
 	}
 
-	public function showComment($pdo) {
+	public function showComment() {
+		$pdo = $this->db;
 		$stmt = $pdo->prepare('SELECT comments.*, users.username FROM comments LEFT JOIN users ON comments.author_id = users.id WHERE comments.post_id = :id ORDER BY comments.id DESC');
 		$stmt->execute([':id' => $this->id]);
 		$this->comments = $stmt->fetchAll();
 	}
 
-	public function deleteAllComments($id) {
+	public function deleteAllComments() {
 		$pdo = $this->db;
 		$stmt = $pdo->prepare('DELETE FROM comments WHERE post_id = :post_id');
 		$stmt->execute([
-			':post_id' => $id
+			':post_id' => $this->id
 		]);
 	}
 
