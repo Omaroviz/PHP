@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "express": "^5.2.1",
+    "minecraft": "^0.0.2"
+  }
+}

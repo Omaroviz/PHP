@@ -96,6 +96,9 @@ class User {
 		$stmt->execute([':username' => $username]);
 		$hash_password = $stmt->fetch();
 		if ($hash_password && password_verify($password, $hash_password['password'])) {
+			$this->id = $hash_password['id'];
+			$this->username = $hash_password['id'];
+			$this->name = $hash_password['id'];
 			$_SESSION['id'] = $hash_password['id'];
 			$_SESSION['username'] = $hash_password['username'];
 			$_SESSION['name'] = $hash_password['name'];
@@ -120,6 +123,15 @@ class User {
 					'httponly' => true,         
 					'samesite' => 'Lax'           
 				]);
+				setcookie('user_id', $this->id, [
+					'expires' => $token['date'],
+					'path' => '/',
+					'domain' => '',
+					'secure' => false,
+					'httponly' => true,
+					'samesite' => 'Lax'
+				]);
+
 			} else {
 				$cookie_token = substr(bin2hex(random_bytes(30)), 0, 30);
 				setcookie('cookie_token', $cookie_token, [
@@ -139,6 +151,15 @@ class User {
 					':date' => $date,
 					':id' => $this->id
 				]);
+				setcookie('user_id', $this->id, [
+					'expires' => $token['date'],
+					'path' => '/',
+					'domain' => '',
+					'secure' => false,
+					'httponly' => true,
+					'samesite' => 'Lax'
+				]);
+
 			}
 		
 			return 1;
@@ -149,7 +170,7 @@ class User {
 	
 	public function valid() {
 		$pdo = $this->db;
-		if (empty($_COOKIE['cookie_token'])) {
+		if (empty($_COOKIE['cookie_token']) || empty($_COOKIE['user_id'])) {
 			header('Location: sign.php');
 			exit();
 		}
@@ -169,6 +190,7 @@ class User {
 			header('Location: sign.php');
 			exit();
 		}
+		echo "User::valid() закончился<br>";
 		
 	}	
 

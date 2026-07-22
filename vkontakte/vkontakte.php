@@ -6,13 +6,22 @@ session_start();
 // CSRF Токен 
 $csrf = new CSRF;
 $token = $csrf->newToken();
+if (isset($_COOKIE['user_id'])) {
+	$user = new User($_COOKIE['user_id'], $pdo);
+	$user->valid();
+	$isAuth = TRUE;
+}
 
 $stmt = $pdo->prepare('SELECT * FROM token');
 
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['delete_id']) && isset($_POST['delete_btn']) && isset($_POST['csrf_token'])) {
+	if (empty($isAuth)) {
+		header('Location: sign.php');
+		exit();
+	}
 	if (!$csrf->validateToken($_POST['csrf_token'])) {die('CSRF ошибка. Доступ запрещен');}
 	$post = new Post($_POST['delete_id'], $pdo);
-	if ($_SESSION['id'] === $post->author_id || $_SESSION['username'] === "admin") {
+	if ($user->id === $post->author_id || $user->username === "admin") {
 		$post->delete($pdo);
 		header('Location: '.$_SERVER['PHP_SELF']);
 		exit();
@@ -24,6 +33,7 @@ if (isset($_COOKIE['cookie_token'])) {
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['like'])) {
 	// Потом	
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -57,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['like'])) {
 			<a href="account" class="vk-button">Настройки</a>
 			<a href="search.php" class="vk-button">Поиск</a>
 			<?php 
-			if (isset($_SESSION['username'])) {
+			if (isset($isAuth)) {
 				echo "<a href='logout.php' class='vk-button'>Выход</a>";
 			} else {
 				echo "<a href='sign.php' class='vk-button' id='userStatus'>Вход</a>";
@@ -74,8 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['like'])) {
 		<div class="friends-mini" style="justify-content: normal">
 			<span id="userNameHTML" class="sidebar-userName"><b>
 <?php
-if (isset($_SESSION['name'])) {
-	echo $_SESSION['name'];
+if (isset($isAuth)) {
+	echo $user->name;
 } else {echo "Гость";}
 ?>
 </b></span>
@@ -118,7 +128,7 @@ if (isset($_SESSION['name'])) {
 
 		<!-- Сюда будут падать новые посты -->
 <?php
-if (empty($_SESSION['id'])) {
+if (empty($isAuth)) {
 echo <<<_END
 	
 	<div class='post'>
@@ -159,8 +169,8 @@ echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($pos
 } else {
 	echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>"; 
 }
-	if (isset($_SESSION['username'])) {
-	if ($_SESSION['username'] === $post->author || $_SESSION['username'] == "admin"){
+	if (isset($isAuth)) {
+	if ($user->username === $post->author || $user->username == "admin"){
 	echo '</p><form method="post" style="all: unset">
 	<input type="hidden" name="csrf_token" value="'.$token.'">
 	<input type="hidden" name="delete_id" value="'.htmlspecialchars($post->id).'">
