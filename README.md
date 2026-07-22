@@ -11,3 +11,6 @@
 - PHP 8+
 - MySQL
 - HTML / CSS
+
+## Access
+GNU GPL v3
