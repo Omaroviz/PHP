@@ -1,39 +1,25 @@
 <?php include_once 'login.php'; session_start(); 
+include_once 'user.php';
 
 if ($_SERVER['REQUEST_METHOD'] === "POST" &&
 	isset($_POST['sign_btn']) &&
 	!empty($_POST['username']) &&
 	!empty($_POST['password'])) {
-	// echo "POST дошел!";
-	// Из соображений безопасности:
-	$sql = "SELECT * FROM users WHERE username = :username";
-	$stmt = $pdo->prepare($sql);
-	$stmt->execute([":username" => $_POST['username']]);
-	$user = $stmt->fetch();
-	// echo "<br><code>// Отладка: ";var_dump($user);echo "</code><br>";
-	// Пока не будет добавлен файл registration.php, расхеширование паролей не будет!
-	if (password_verify($_POST['password'], $user['password'])) {
-		$_SESSION['name'] = $user['name'];
-		$_SESSION['username'] = $user['username'];
-		$_SESSION['id'] = $user['id'];
-		$stmt = $pdo->prepare('SELECT id FROM users_info WHERE id = :id');
-		$stmt->execute([':id' => $_SESSION['id']]);
-		$user = $stmt->fetch();
-		if (!$user) {
-			$stmt = $pdo->prepare("INSERT INTO users_info(id) VALUES(:id)");
-			$stmt->execute([':id' => $_SESSION['id']]);
+	$user = new User(null, $pdo);
+
+	if ($user->login($_POST['username'], $_POST['password'])) {
+			header('Location: vkontakte.php');
+			exit();
+		} else {
+			$error = "Неверный пароль";
 		}
-
-		header("Location: vkontakte.php");
-		exit();
-
 	} else {
-	 	echo "Неверный логин/пароль";
+	 	//echo "Неверный логин/пароль";
 	}
 
 	//header("location: " . $_server['php_self']);
 	//exit();
-}
+
 
 ?>
 
@@ -54,14 +40,15 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" &&
 			<span class="vkontakte-main-text-B">В</span>контакте
 		</a>
 		<div class="vk-left">
-			<a href="about.php" class="vk-button">Моя страница</a>
-			<a href="about.php" class="vk-button">Друзья</a>
+			<a href="profile.php" class="vk-button">Моя страница</a>
+			<a href="friends.php" class="vk-button">Друзья</a>
 		</div>
 
 		<div class="vk-right" id="vk-right">
-			<a href="about.php" class="vk-button">Сообщения</a>
-			<a href="#" class="vk-button">Поиск</a>
-			<a href="register_test.php" class="vk-button" id="userStatus">Регистрация</a>
+	
+	<a href="account.php" class="vk-button">Настройки</a>
+			<a href="search.php" class="vk-button">Поиск</a>
+			<a href="register.php" class="vk-button" id="userStatus">Регистрация</a>
 		</div>
 	</div>
 </header>
@@ -69,6 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" &&
 <main>
 	<div class="login-content">
 		<p class="login-main-text">Добро пожаловать!</p>
+		<?php
+		if (isset($error)) {
+			echo "<b>".$error."</b>";
+		}
+		?>	
 		<form method="POST">
 		<div>
 			<span class="input-text">Логин:</span>
@@ -81,9 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" &&
 		</div>
 		
 		<div style="margin: 10px 0;">
-			<button type="submit" name="sign_btn" class="createPostButton" onclick="login()">Вход</button>
+			<button type="submit" name="sign_btn" class="createPostButton">Вход</button>
 		</form>
-			<a type="button" class="vk-button" href="register_test.php">Регистрация</a>
+			<a type="button" class="vk-button" href="register.php">Регистрация</a>
 		</div>
 	</div>
 </main>

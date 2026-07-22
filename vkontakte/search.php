@@ -1,6 +1,7 @@
 <?php
 
 include_once 'login.php';
+include_once 'user.php';
 session_start();
 ?>
 
@@ -27,7 +28,8 @@ session_start();
 		</div>
 
 		<div class="vk-right" id="vk-right">
-			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
+		
+	<a href="account.php" class="vk-button">Настройки</a>
 			<a href="#" class="vk-button">Поиск</a>
 			<?php 
 			if (isset($_SESSION['username'])) {
@@ -45,12 +47,13 @@ session_start();
 <?php
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['find'])) {
 echo '<h2 class="search_h">Люди</h2>';
-$sql = "SELECT * FROM users WHERE id = :text OR name LIKE :text OR username LIKE :text";
+/*$sql = "SELECT * FROM users WHERE id = :text OR name LIKE :text OR username LIKE :text";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([':text' => $_GET['find']]);
-$users = $stmt->fetchAll();
-if ($users) {
-foreach ($users as $user) {
+$stmt->execute([':text' => '%'.$_GET['find'].'%']);
+$users = $stmt->fetchAll();*/
+$search = new Search($_GET["find"], $pdo);
+if ($search->users) {
+foreach ($search->users as $user) {
 	echo <<<_END
 <div class="search_box">
 <span class="search_info"> 
@@ -79,14 +82,9 @@ _END;
 	echo "<h4>Ничего не найдено</h4>";
 
 }
-
-echo "<h2 class='search_h'>Посты</h2>";
-$sql = "SELECT * FROM posts WHERE title = :text";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([":text" => $_GET['find']]);
-$posts = $stmt->fetchAll();
-if ($posts) {
-foreach ($posts as $post) {
+echo '<h2 class="search_h">Посты</h2>';
+if ($search->posts) {
+foreach ($search->posts as $post) {
 	echo "<div class='post'>";
 	echo "<h3 style='margin: 0;'>".htmlspecialchars($post['title'])."</h3>";
 	echo htmlspecialchars($post['text']);

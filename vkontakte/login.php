@@ -1,11 +1,13 @@
 <?php
 
 include_once 'function.php';
+include_once 'user.php';
 
-$host = 'localhost';
+$host = getenv('DB_HOST') ?: 'localhost';
 $dbname = 'vkontakte';
 $username = 'root';
 $password = '';
+
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8",$username, $password);
@@ -18,5 +20,5 @@ try {
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
-
+ini_set('session.use_only_cookies', 1);
+ini_set('session.cookie_secure', 1); // только если есть HTTPS

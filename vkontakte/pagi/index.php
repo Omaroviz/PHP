@@ -1,24 +1,46 @@
+<!DOCTYPE html>
+<html lang='ru'>
+<head> 
+<title>Тест</title>
+<style src='../vkontaktestyle.css'></style>
+</head>
+<body>
 <?php
 
 include_once '../login.php';
 
+function showPosts($pdo) {
 if (isset($_GET['page'])) {
 	$page = (int)$_GET['page'];
-	if ($page < 0) $page = 0;
-	$stmt = $pdo->query("SELECT COUNT(*) FROM posts");
-	if ($page < $stmt->fetchColumn()) {
-	$stmt = $pdo->query("SELECT * FROM posts LIMIT 10 OFFSET $page");
+	if ($page < 1) $page = 1;
+	$stmt = $pdo->query('SELECT * FROM posts LIMIT 5 OFFSET '.($page - 1) * 5);
 	$posts = $stmt->fetchAll();
-	foreach($posts as $post) {
-		echo htmlspecialchars($post['title'])."<br>";
+	if ($posts) {
+		foreach ($posts as $post) {
+			$title = htmlspecialchars($post['title']);
+			$text = htmlspecialchars($post['text']);
+		echo <<<_END
+			<div class='post'>
+			<h3 style='margin: 0;'>{$title}</h3>
+			{$text}
+			</div>
+			_END;
 	}
-	$page2 = $page + 10;
-	$page0 = $page - 10;
-	echo "<a href='?page=".$page0."'>Назад</a>";
-	echo "<a href='?page=".$page2."'>Вперед</a>";
+	$page_up = $page + 1;
+	$page_down = $page - 1;
+	echo "<a href='?page=".$page_down."'>Назад</a> ";
+	echo "<a href='?page=".$page_up."'>Вперед</a>";
+	} else {
+		header('Location: index.php');
+		exit();
 	}
-} else {
 
-	echo "Нет \$_GET запроса";
+} else {
+	header('Location: index.php?page=1');
+	exit();	
 
 }
+
+}
+
+showPosts($pdo);

@@ -735,3 +735,98 @@ body {
 	font-size: 15px;
 
 }
+
+.account_box {
+	background-color:#dedede;
+	max-width: 1000px;
+	border: 1px solid grey;
+	margin: 10px auto;
+	border-radius: 10px;
+	padding: 0;
+	display: flex;
+	justify-content: column;
+	flex-direction: column;
+}
+
+.account_loyaut {
+	align-items: center;
+}
+
+.account_box_header {
+	background-color:#bab8b8;
+	border-radius: 10px 10px 0 0;
+	border: 1px solid grey;
+	margin: 0;
+}
+
+.account_box_header_btn {
+	text-decoration: none;
+	color: black;
+	background-color: none;
+	margin: 5px;
+	display: inline-block;
+	border-radius: 3px;
+}
+
+.account_box_header_btn:hover {
+	color: #363636;
+}
+
+.account_info_info {
+	margin: 0 10px;
+	margin: auto;
+}
+
+.account_info_p {
+	margin: 5px 0;
+}
+
+.account_info_btn {
+	color:#141414;
+	text-decoration: none;
+	background-color:#e9e9ed;
+	padding: 0 4px;
+       	cursor: pointer;	
+	border-radius: 3px;
+	border: 1px solid grey;
+}
+
+.account_info_btn:hover {
+	background-color:#d9d9de;
+}
+
+.edit_info_input {
+	border-radius: 3px;
+
+}
+
+.edit_info_error {
+	text-align: center;
+}
+
+.post_comment_text {
+	width: 100%;
+	height: 40px;
+	resize: none;
+}
+
+.post_comment_btn {
+	background-color: #e9e9ed;
+	border-radius: 4px;
+	border:1px solid #9696a2;
+	padding: 2px 5px;
+}
+
+.post_comment_btn:hover {
+	background-color:#d7d7db;
+}
+
+.profile_add_friend_btn {
+	text-align: center; 
+	min-width: 300px; 
+	border-radius: 3px;
+	border: 1px solid grey;
+	background-color: #edeef0;
+}
+
+.profile_add_friend_btn:hover

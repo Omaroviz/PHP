@@ -1,21 +1,39 @@
 <?php
 
 include_once 'login.php';
+include_once 'user.php';
 session_start();
-if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
-	$stmt = $pdo->prepare("SELECT * FROM posts WHERE id = :id");
-	$stmt->execute([":id" => $_GET['delete_id']]);
-	$user = $stmt->fetch();
-	$stmt_info = $pdo->prepare('SELECT * FROM users WHERE username = :username');
-	$stmt_info->execute([":username" => $user['author']]);
-	$user_info = $stmt_info->fetch();
-	if ($_SESSION['username'] == "admin" || $_SESSION['username'] === $user['author']) {
-		$stmt = $pdo->prepare($sql = "DELETE FROM posts WHERE id = :id");	
-		$stmt->execute([':id' => $_GET['delete_id']]);
-	header("Location: https://localhost/vkontakte/vkontakte.php");
-    exit();
-	} else {echo "Вы не можете удалить этот пост!";}
+// CSRF Токен 
+$csrf = new CSRF;
+$token = $csrf->newToken();
+if (isset($_COOKIE['user_id'])) {
+	$user = new User($_COOKIE['user_id'], $pdo);
+	$user->valid();
+	$isAuth = TRUE;
 }
+
+$stmt = $pdo->prepare('SELECT * FROM token');
+
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['delete_id']) && isset($_POST['delete_btn']) && isset($_POST['csrf_token'])) {
+	if (empty($isAuth)) {
+		header('Location: sign.php');
+		exit();
+	}
+	if (!$csrf->validateToken($_POST['csrf_token'])) {die('CSRF ошибка. Доступ запрещен');}
+	$post = new Post($_POST['delete_id'], $pdo);
+	if ($user->id == $post->author_id || $user->username == "admin") {
+		$post->delete($pdo);
+		header('Location: '.$_SERVER['PHP_SELF']);
+		exit();
+	} else {$error = "Вы не можете удалить этот пост!";}
+}
+if (isset($_COOKIE['cookie_token'])) {
+	echo $_COOKIE['cookie_token'];
+}
+if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['like'])) {
+	// Потом	
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -46,10 +64,10 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
 			<button type="submit">Поиск</button>
 			</form>
 
-			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
+			<a href="account" class="vk-button">Настройки</a>
 			<a href="search.php" class="vk-button">Поиск</a>
 			<?php 
-			if (isset($_SESSION['username'])) {
+			if (isset($isAuth)) {
 				echo "<a href='logout.php' class='vk-button'>Выход</a>";
 			} else {
 				echo "<a href='sign.php' class='vk-button' id='userStatus'>Вход</a>";
@@ -66,8 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['delete_id'])) {
 		<div class="friends-mini" style="justify-content: normal">
 			<span id="userNameHTML" class="sidebar-userName"><b>
 <?php
-if (isset($_SESSION['name'])) {
-	echo $_SESSION['name'];
+if (isset($isAuth)) {
+	echo $user->name;
 } else {echo "Гость";}
 ?>
 </b></span>
@@ -78,7 +96,7 @@ if (isset($_SESSION['name'])) {
 			<a href="#" class="vk-button" id="subscribeButton" onclick="subscribe()">Подписаться</a>
 		</nav>
 		<div class="sidebar-window-post">
-			<a href="" class="sidebar-window-post-btn">Все посты</a>
+			<a href="vkontakte.php" class="sidebar-window-post-btn">Все посты</a>
 			<a href="" class="sidebar-window-post-btn">Посты друзей</a>
 			<a href="" class="sidebar-window-post-btn">Посты каналов</a>
 			<a href="" class="sidebar-window-post-btn">Общая лента</a>
@@ -86,7 +104,7 @@ if (isset($_SESSION['name'])) {
 		<div class="sidebar-window-post">
 			<a href="" class="sidebar-window-post-btn">Мои лайки</a>
 			<a href="" class="sidebar-window-post-btn">Мои дизлайки</a>
-			<a href="" class="sidebar-window-post-btn">Мои комментарии</a>
+			<a href="comments.php" class="sidebar-window-post-btn">Мои комментарии</a>
 			<!--			<a href="" class="sidebar-window-post-btn">Мои голоса: 0</a>-->
 		</div>
 		<!--<div class="sidebar-window-post">-->
@@ -95,12 +113,14 @@ if (isset($_SESSION['name'])) {
 		<!--<a href="" class="sidebar-window-post-btn">Нравиться друзьям</a>-->
 		<!--</div>-->
 	</aside>
+
 	<div class="main-content">
 		<div class="post">
 			<form method="POST" action="new_post.php">
 			<p class="postmain">Новая запись</p>
-			<textarea name="title" id="postName" placeholder="Заголовок" class="createPostName"></textarea>
-			<textarea name="text" id="postInput" placeholder="Что у вас нового?" class="createPostText"></textarea>
+			<input type='hidden' name='csrf_token' value='<?php echo $token?>'>
+			<textarea name="title" id="postName" placeholder="Заголовок" class="createPostName" style='resize: none'></textarea>
+			<textarea name="text" id="postInput" placeholder="Что у вас нового?" class="createPostText" style='resize: none'></textarea>
 			<!-- <input type="text" id="postCommand" placeholder="Команда" class="createPostCommand"> -->
 			<button type="submit" name="add_post" class="createPostButton">Опубликовать</button>
 			</form>
@@ -108,40 +128,59 @@ if (isset($_SESSION['name'])) {
 
 		<!-- Сюда будут падать новые посты -->
 <?php
+if (empty($isAuth)) {
+echo <<<_END
+	
+	<div class='post'>
+		<h3 style="margin: 0;">Добро пожаловать!</h3>
+		<a href='sign.php'>Войдите</a> или
+		<a href='register.php'>Зарегистрируйтесь</a>
+	</div>
+_END;
 
+}
+
+if (isset($error)) {
+$error = htmlspecialchars($error);
+echo <<<_END
+	
+	<div class='post'>
+		<h3 style="margin: 0;">Ошибка</h3>
+		{$error}
+		<a href='vkontakte.php'>Перезагрузка</a>
+	</div>
+_END;
+}
 echo <<<_END
 _END;
-$stmt = $pdo->query("SELECT * FROM posts ORDER BY id DESC");
+$stmt = $pdo->query("SELECT posts.*, users.username FROM posts LEFT JOIN users ON posts.post_from = users.id ORDER BY posts.id DESC");
 $posts = $stmt->fetchAll();
-foreach ($posts as $post) {
+foreach ($posts as $poster) {
+	$post = new Post($poster);
+	$title = htmlspecialchars($post->title);
+	$text = htmlspecialchars($post->text);
 		echo <<<_END
     <div class="post">
-	<h3 style="margin: 0;">
+	<h3 style="margin: 0;">{$title}</h3>
+	{$text}
 _END;
-        echo htmlspecialchars($post['title']);
-        echo <<<_END
-</h3>
-_END;
-echo htmlspecialchars($post['text']);
-if (is_numeric($post['post_from'])) {
-$sql = "SELECT username FROM users WHERE id = :post_from";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([':post_from' => $post['post_from']]);
-//var_dump($stmt->fetch());
-$post_by = $stmt->fetch();
-echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post['date'])." | ".htmlspecialchars($post['author'])." |       На стене @".$post_by['username']."</small>";
+if (is_numeric($post->post_from)) {
+echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)." | На стене @".htmlspecialchars($poster['username'])."</small>";
 } else {
-	echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post['date'])." | ".htmlspecialchars($post['author'])."</small>"; 
+	echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>"; 
 }
-	if (isset($_SESSION['username'])) {
-	if ($_SESSION['username'] === $post['author'] || $_SESSION['username'] == "admin"){
-	echo '</p><a class="vk-button" href="?delete_id='.$post['id'].'">Удалить</a>';
+	if (isset($isAuth)) {
+	if ($user->username === $post->author || $user->username == "admin"){
+	echo '</p><form method="post" style="all: unset">
+	<input type="hidden" name="csrf_token" value="'.$token.'">
+	<input type="hidden" name="delete_id" value="'.htmlspecialchars($post->id).'">
+	<button class="vk-button" type="submit" name="delete_btn">Удалить</button></form>
+';
 	}
 	}
-	echo "</div>";
+	echo " <a href='post.php?id=".$post->id."' class='vk-button'>Комментарии</a></div>";
 
 }
-
 
 
 ?>
@@ -149,9 +188,9 @@ echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($pos
 	</div>
 </main>
 <footer id="vniz" style="margin: 0;">
-	<a href="#" class="vk-button" onclick="confirm('О сайте.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nПривет')">О сайте</a>
-	"Вконтакте Druza" ООО. Все права защищены. Распространения кода сайта разрешено с <a href="#">условиями
-	конфидициальности</a> на сайте GitHub.
+	<a href="#" class="vk-button" onclick="confirm('Fork me? Fork you! @octocat')">О сайте</a>
+© 2026 Вконтакте Druza. Исходный код распространяется под лицензией 
+<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener noreferrer">GNU GPL v3</a> на сайте <a href='https://www.GitHub.com/Omaroviz/PHP'>GitHub</a>.
 </footer>
 
 </body>

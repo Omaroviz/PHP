@@ -1,51 +1,54 @@
 <?php
 
 include_once 'login.php';
-
+include_once 'user.php';
 session_start();
-
-if (!isset($_SESSION['username'])) {
+$csrf = new CSRF;
+$token = $csrf->newToken();
+$_SESSION = [];
+if (isset($_COOKIE['cookie_token']) && isset($_COOKIE['user_id'])) {
+	$user = new User($_COOKIE['user_id'], $pdo);
+	$user->valid();
+} else {
 	header('Location: sign.php');
 	exit();
 }
 
+$author_wall = $_GET['id'];
+
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['delete_id']) && isset($_POST['delete_btn']) && isset($_POST['csrf_token'])) {
+	if (!$csrf->validateToken($_POST['csrf_token'])) {die('CSRF ошибка. Доступ запрещен');}
+	$post = new Post($_POST['delete_id'], $pdo);
+	if ($user->id === $post->author_id || $user->username === "admin") {
+		$post->delete($pdo);
+		header('Location: '.$_SERVER['PHP_SELF']);
+		exit();
+	} else {$error = "Вы не можете удалить этот пост!";}
+}
+
+
+if (isset($_GET['id']) && $_GET['id'] != $user->id) {
+    $user = new User($_GET['id'], $pdo);
+} else {
+    $viewUser = $user;
+}
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['add_post'])
-	&& !empty($_POST['title']) && !empty($_POST['text'])) {
+	&& isset($_POST['csrf_token']) && (!empty($_POST['title']) || !empty($_POST['text']))) {
+	$post_from = isset($_GET['id']) ? $_GET['id'] : $user->id;
+	if (!$csrf->validateToken($_POST['csrf_token'])) {die('CSRF atack');}
 	$sql = "INSERT INTO posts(title, text, author, author_id, post_from) VALUES(:title, :text, :author, :author_id, :post_from)";
 	$stmt = $pdo->prepare($sql);
 	$stmt->execute([
-		":title" => $_POST['title'],
-		":text" => $_POST['text'],
-		":author" => $_SESSION['username'],
-		":author_id" => $_SESSION['id'],
-		":post_from" => $_GET['id']
+		":title" => trim($_POST['title']),
+		":text" => trim($_POST['text']),
+		":author" => $user->username,
+		":author_id" => $user->id,
+		":post_from" => $post_from
 	]);
 	header("Location: ".$_SERVER['REQUEST_URI']);
 	exit();
 }
-
-if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['city_btn'])) {
-	echo codetext('Отладка', "полковнику никто не пишет"); 
-	echo $_POST['city'];
-	$stmt = $pdo->prepare("UPDATE users_info SET city = :city WHERE id = :id");
-	$stmt->execute([
-		':city' => $_POST['city'],
-		':id' => $_SESSION['id']
-	]);
-	header('Location: profile.php?id='.$_SESSION['id']);
-	exit();
-}
-
-if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['about_btn'])) {
-	$sql = "UPDATE users_info SET about = :about WHERE id = :id";
-	$stmt = $pdo->prepare($sql);
-	$stmt->execute([
-		':about' => $_POST['about'],
-		':id' => $_SESSION['id']
-	]);
-	header("Location: profile.php?id=".$_SESSION['id']);
-	exit();
-}
+/*
 if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 	$sql = "SELECT * FROM users WHERE id = :id";
 	$stmt = $pdo->prepare($sql);
@@ -70,8 +73,18 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 	exit();
 }
 
+ */
 
+if (!$_GET['id']) {
+	header("Location: profile.php?id=".$user->id);
+	exit();
+}
 
+if ($user->id === $_GET['id']) {
+	$edit_profile = 1;
+} else {
+	$edit_profile = 0;
+}
 ?>
 
 
@@ -98,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 			<span class="vkontakte-main-text-B">В</span>контакте
 		</a>
 		<div class="vk-left">
-			<a href="profile.html" class="vk-button">Моя страница</a>
+			<a href="profile.php" class="vk-button">Моя страница</a>
 			<a href="friends.php" class="vk-button">Друзья</a>
 		</div>
 
@@ -109,15 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['id'])) {
 			<button type="submit">Поиск</button>
 			</form>
 
-			<a href="https://vkontakte.ucoz.site/online-1/messages.html" class="vk-button">Сообщения</a>
+			
+	<a href="account.php" class="vk-button">Настройки</a>
 			<a href="search.php" class="vk-button">Поиск</a>
-			<?php
-if (isset($_SESSION['id'])) {
-	echo '<a href="logout.php" class="vk-button" id="userStatus">Выход</a>';
-} else {
-	echo '<a href="sign.php" class="vk-button" id="userStatus">Вход</a>';
-}
-?>
+			<a href="logout.php" class="vk-button" id="userStatus">Выход</a>
 		</div>
 	</div>
 
@@ -130,102 +138,96 @@ if (isset($_SESSION['id'])) {
 				<div class="page-layout">
 					<div class="profile-info">
 						<img src="media/Pavel_Durov_logo.jpg" alt="Фото профиля" class="profile-logo">
-						<h1 class="profileName"><span><?php echo htmlspecialchars($profile['name']);?></span></h1>
+						<h1 class="profileName"><span><?php echo htmlspecialchars($user->name);?></span></h1>
+						<?php
+if (!$edit_profile) {
+	echo "<button class='profile_add_friend_btn'>Добавить в друзья</button>";
+}
+?>
 						<h3>Личная информация:</h3>
 						<ul>
-						<li>Никнейм: @<span id="profile-info-userName"><?php echo htmlspecialchars($profile['username'])?></span></li>
-							<li>Возраст: <span id="profile-info-age">21</span>
+						<li>Никнейм: @<span id="profile-info-userName"><?php echo htmlspecialchars($user->username)?></span></li>
+							<li>Возраст: <span id="profile-info-age">
 <?php
-if ($edit_profile) {echo '<button class="vk-button-btn" style="max-width: 100px; text-align: center; padding: 1px; font-size: 10px">Изменить</button>';}
+	echo htmlspecialchars($user->age);
 ?>
-</li>
+</span>
+    </li>
 							<li>
 								<label for="city-select">Город: <?php 
-if (isset($profile_info['city'])) {
-	echo htmlspecialchars($profile_info['city']);}
-else {
-echo "Не выбрано";
-}
+echo htmlspecialchars($user->city);
 ?></label>
-								<?php
-								if ($edit_profile) {
-								echo <<<_END
-								<form method="POST">
-								<select id="city-select" class="vk-button-btn" style="max-width: 120px; padding: 1px; font-size: 10px" name="city">
-								<option value="Москва">Москва</option>
-								<option value="Санкт-Петербург">Санкт-Петербург</option>
-								<option value="Новосибирск">Новосибирск</option>
-								<option value="Екатеринбург">Екатеринбург</option>
-								<option value="Казань">Казань</option>
-								<option value="Нижний Новгород">Нижний Новгород</option>
-								<option value="Челябинск">Челябинск</option>
-								<option value="Самара">Самара</option>
-								<option value="Омск">Омск</option>
-								<option value="Ростов-на-Дону">Ростов-на-Дону</option>
-								<option value="Уфа">Уфа</option>
-								<option value="Красноярск">Красноярск</option>
-								<option value="Воронеж">Воронеж</option>
-								<option value="Пермь">Пермь</option>
-								<option value="Волгоград">Волгоград</option>
-								<option value="Краснодар">Краснодар</option>
-								<option value="Саратов">Саратов</option>
-								<option value="Тюмень">Тюмень</option>
-								<option value="Тольятти">Тольятти</option>
-								<option value="Ижевск">Ижевск</option>
-								<option value="Махачкала">Махачкала</option>
-								<option value="Хабаровск">Хабаровск</option>
-								<option value="Владивосток">Владивосток</option>
-								<option value="Другой" selected>Другой город</option>
-								</select>
-							<button type="submit" name="city_btn" class="vk-button-btn" style="padding: 0 10px">Готово</button>
-							</form>
-							_END;
-								}
-							?>
 							</li>
 <li>    <form method="POST">
 	<label>О себе: </label>
 	    <span><?php 
-	$about = $profile_info['about'] ?? 'Ничего нет';
+	$about = $user->about;
 echo nl2br(htmlspecialchars(wordwrap($about, 30, "\n", true)));	?>
-<?php if ($edit_profile) { ?>
-            <textarea name="about" placeholder="Напишите о себе..."></textarea><br>
-            <button type="submit" name="about_btn" class="vk-button-btn">Сохранить</button>
-	<?php } ?>    
 </form>
 </li>
-							</li>
+<?php
+if ($edit_profile) {
+	echo <<<_END
+<li style='all: unset;'>
+<a href='account.php' style='display: inline-block; margin: 0;'>Изменить</a>
+</li>
+_END;
+}
+?>
 						</ul>
 					</div>
 					<div class="profile-post-container">
 						<div class="post">
 							<form method="POST">
+								<input type='hidden' name='csrf_token' value='<?php echo $token?>'>
 								<p class="postmain">Новый пост</p>
 								<textarea name="title" id="postName" placeholder="Заголовок" class="createPostName"></textarea>
 								<textarea name="text" id="postInput" placeholder="Что у вас нового?" class="createPostText"></textarea>
 								<!-- <input type="text" id="postCommand" placeholder="Команда" class="createPostCommand"> -->
 								<button type="submit" name="add_post" class="createPostButton">Опубликовать</button>
 							</form>
-						</div>
-						<?php
-							$sql = "SELECT * FROM posts WHERE post_from = :id ORDER BY id DESC";
-							$stmt = $pdo->prepare($sql);
-							$stmt->execute([':id' => $_GET['id']]);
-							$post = $stmt->fetchAll();
-?>
-<?php if (count($post) > 0): ?>
-    <?php foreach ($post as $info): ?>
-        <div class="post">
-            <h3><?php echo htmlspecialchars($info['title']); ?></h3>
-            <p><?php echo nl2br(htmlspecialchars($info['text'])); ?></p>
-            <small><?php echo htmlspecialchars($info['author']); ?></small>
-        </div>
-    <?php endforeach; ?>
-<?php else: ?>
+							</div>
+<?php
+
+if (isset($error)) {
+	foreach ($error as $err) {
+	$err = htmlspecialchars($err);
+echo <<<_END
+	
+	<div class='post'>
+		<h3 style="margin: 0;">Ошибка</h3>
+		{$err}
+		<a href='vkontakte.php'>Перезагрузка</a>
+	</div>
+_END;
+	}
+}
+$stmt = $pdo->prepare("SELECT * FROM posts WHERE post_from = :id ORDER BY id DESC");
+$stmt->execute([':id' => $_GET['id']]);
+$posts = $stmt->fetchAll();
+foreach ($posts as $poster) {
+	$post = new Post($poster);
+	$title = htmlspecialchars($post->title);
+	$text = htmlspecialchars($post->text);
+		echo <<<_END
     <div class="post">
-        <p>Нет постов</p>
-    </div>
-<?php endif; ?>				</div>
+	<h3 style="margin: 0;">{$title}</h3>
+	{$text}
+_END;
+echo "<br><small style='color: grey; font-weight: bold;'>".htmlspecialchars($post->date)." | ".htmlspecialchars($post->author)."</small>";
+	if ($user->username === $post->author || $user->username == "admin" || $user->id == $_GET['id']){
+	echo '</p><form method="post" style="all: unset">
+	<input type="hidden" name="csrf_token" value="'.$token.'">
+	<input type="hidden" name="delete_id" value="'.htmlspecialchars($post->id).'">
+	<button class="vk-button" type="submit" name="delete_btn">Удалить</button></form>
+';
+	}
+	echo " <a href='post.php?id=".$post->id."' class='vk-button'>Комментарии</a></div>";
+
+
+}
+
+?>
 			</div>
 		</div>
 	</div>
@@ -234,7 +236,6 @@ echo nl2br(htmlspecialchars(wordwrap($about, 30, "\n", true)));	?>
 </body>
 
 </html>
-
 
 
 
